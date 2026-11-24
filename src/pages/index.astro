@@ -9,12 +9,17 @@ import BookingCTA from '../components/shared/BookingCTA.astro';
 import Button from '../components/ui/Button.astro';
 import { faqs } from '../data/faqs';
 import { business } from '../data/business';
+import { publishedProjects } from "../lib/portfolio";
+import ProjectSection from "../components/portfolio/ProjectSection.astro";
+import TestimonialSection from "../components/portfolio/TestimonialSection.astro";
+const projects = await publishedProjects();
 ---
-<BaseLayout title={`Catering & Events | ${business.registeredName}`} description="Catering, event decoration, custom cakes and confectionery in Kogi State, Abuja and across Nigeria.">
+<BaseLayout title="Catering & Events" description="Catering, event decoration, custom cakes and confectionery in Kogi State, Abuja and across Nigeria.">
  <HomeHero />
  <section class="section container stack-large"><SectionHeading eyebrow="01 / What we do" title="Our four specialties." description="Book individually or bring multiple services together for your occasion."/><ServiceGrid /></section>
- <!-- Verified work and testimonials are deliberately omitted until supplied. -->
+ <ProjectSection projects={projects.filter(p=>p.data.featured)}/>
  <section class="section inverse"><div class="container split"><div class="stack"><p class="eyebrow">Our commitment</p><h2>{business.motto}.</h2><span class="accent-rule" aria-hidden="true"></span></div><div class="stack"><p class="lead">One team bringing food, creativity and celebration together.</p><p>Explore our services and discuss an arrangement tailored to your needs.</p><div><Button href="/about" variant="inverse">Discover our story</Button></div></div></div></section>
+ <TestimonialSection projects={projects}/>
  <section class="section container stack-large"><SectionHeading eyebrow="02 / Getting started" title="How to book."/><BookingSteps /></section>
  <section class="section container ruled stack-large"><SectionHeading eyebrow="03 / Good to know" title="Frequently asked questions."/><FaqAccordion items={[faqs[0],faqs[2],faqs[3]]}/><div><Button href="/faq" variant="text">View all questions ↗</Button></div></section>
  <BookingCTA />

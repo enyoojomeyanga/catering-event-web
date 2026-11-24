@@ -11,5 +11,5 @@ a { color: inherit; text-underline-offset: .2em; }
 html { scroll-padding-top: 7rem; }
 body { min-height:100vh; display:flex; flex-direction:column; }
 main { flex:1; }
-.skip-link { position:fixed; z-index:100; }
+
 main, main section { min-width:0; }

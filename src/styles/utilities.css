@@ -4,7 +4,7 @@
 .inverse { background: var(--surface-inverse); color: var(--text-inverse); --focus-color: var(--focus-dark); }
 .editorial { font-family: var(--font-editorial); font-style: italic; font-weight: 400; }
 .eyebrow { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.skip-link { position: absolute; inset: 0 auto auto 1rem; padding: .75rem; background: var(--surface-page); color: var(--text-primary); transform: translateY(-150%); z-index: 10; }
+.skip-link { position: fixed; inset: 0 auto auto 1rem; padding: .75rem; background: var(--surface-page); color: var(--text-primary); transform: translateY(-150%); z-index: 100; }
 .skip-link:focus { transform: none; }
 .stack { display:grid; gap:1rem; align-content:start; }
 .stack-large { display:grid; gap:clamp(1.75rem,4vw,3rem); align-content:start; }

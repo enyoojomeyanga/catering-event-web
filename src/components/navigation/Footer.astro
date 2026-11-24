@@ -2,11 +2,13 @@
 import { business } from '../../data/business';
 import { services } from '../../data/navigation';
 import { whatsappLink } from '../../lib/whatsapp';
+import { publishedProjects } from "../../lib/portfolio";
+const hasGallery = (await publishedProjects()).length > 0;
 ---
 <footer class="inverse footer"><div class="container footer-grid">
   <div><h2>{business.displayName ?? business.registeredName}</h2><p class="editorial">{business.motto}.</p><p>{business.coverage}</p></div>
   <nav aria-label="Footer services"><h2>Services</h2>{services.map(service => <a href={`/services/${service.slug}`}>{service.title}</a>)}</nav>
-  <nav aria-label="Footer information"><h2>Information</h2><a href="/about">About</a><a href="/faq">FAQs</a><a href="/contact">Contact</a><a href={whatsappLink()}>WhatsApp enquiries</a></nav>
+  <nav aria-label="Footer information"><h2>Information</h2>{hasGallery && <a href="/gallery">Gallery</a>}<a href="/about">About</a><a href="/faq">FAQs</a><a href="/contact">Contact</a><a href={whatsappLink()}>WhatsApp enquiries</a></nav>
   <div><h2>Contact</h2>{business.phones.map(phone => <a href={`tel:+234${phone.slice(1)}`}>{phone}</a>)}<a href={`mailto:${business.email}`}>{business.email}</a>{business.offices.map(office => <address><strong>{office.label}</strong><br />{office.address}</address>)}</div>
   <p class="copyright">© {new Date().getFullYear()} {business.registeredName}</p>
 </div></footer>

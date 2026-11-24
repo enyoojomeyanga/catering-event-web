@@ -5,11 +5,13 @@ import { whatsappLink } from '../../lib/whatsapp';
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const active = (href: string) => path === href ? 'page' : undefined;
 const name = business.displayName ?? business.registeredName;
+import { publishedProjects } from "../../lib/portfolio";
+const hasGallery = (await publishedProjects()).length > 0;
 ---
 <header class="site-header" data-header>
+  <div class="header-surface">
   <div class="container header-row">
     <a class="brand" href="/" aria-label={`${name} home`}>{name}</a>
-    <a class="enquire" href={whatsappLink()}>Enquire<span class="wide-label"> now</span></a>
     <nav aria-label="Primary" class="desktop-nav">
       <a href="/" aria-current={active('/')}>Home</a>
       <details class="services-menu" data-disclosure>
@@ -19,49 +21,87 @@ const name = business.displayName ?? business.registeredName;
           <div class="service-links">{services.map((service,i) => <a href={`/services/${service.slug}`} aria-current={active(`/services/${service.slug}`)}><span class="eyebrow">0{i+1}</span><strong>{service.title}</strong><span>{service.description}</span></a>)}</div>
         </div>
       </details>
-      <a href="/about" aria-current={active('/about')}>About</a>
+      {hasGallery && <a href="/gallery" aria-current={active("/gallery")}>Gallery</a>}<a href="/about" aria-current={active('/about')}>About</a>
       <a href="/contact" aria-current={active('/contact')}>Contact</a>
     </nav>
+    <a class="enquire" href={whatsappLink()}>Enquire<span class="wide-label"> now</span></a>
     <details class="mobile-nav" data-disclosure>
       <summary>Menu <span aria-hidden="true">☰</span></summary>
       <nav aria-label="Mobile primary" class="mobile-panel">
         <a href="/" aria-current={active('/')}>Home</a>
         <details data-disclosure><summary>Services</summary><div class="mobile-services"><a href="/services" aria-current={active('/services')}>All services</a>{services.map(service => <a href={`/services/${service.slug}`} aria-current={active(`/services/${service.slug}`)}>{service.title}</a>)}</div></details>
-        <a href="/about" aria-current={active('/about')}>About</a><a href="/contact" aria-current={active('/contact')}>Contact</a>
+        {hasGallery && <a href="/gallery" aria-current={active("/gallery")}>Gallery</a>}<a href="/about" aria-current={active('/about')}>About</a><a href="/contact" aria-current={active('/contact')}>Contact</a>
       </nav>
     </details>
+  </div>
   </div>
 </header>
 <script>
   const header = document.querySelector<HTMLElement>('[data-header]');
   if (header) {
     const disclosures = Array.from(header.querySelectorAll<HTMLDetailsElement>('[data-disclosure]'));
-    const close = (item: HTMLDetailsElement, restore = false) => { item.open = false; if (restore) item.querySelector('summary')?.focus(); };
-    document.addEventListener('keydown', (event) => {
+    const close = (item: HTMLDetailsElement, restore = false) => {
+      item.open = false;
+      for (const child of disclosures) {
+        if (child !== item && item.contains(child)) child.open = false;
+      }
+      if (restore) item.querySelector<HTMLElement>(':scope > summary')?.focus();
+    };
+    // Do not close on focusout: touch activation can move focus before a click.
+    // Only a completed outside click or deliberate keyboard focus movement dismisses.
+    let keyboardNavigation = false;
+    document.addEventListener('pointerdown', () => { keyboardNavigation = false; });
+    document.addEventListener('click', event => {
+      const path = event.composedPath();
+      for (const item of disclosures) {
+        if (item.open && !path.includes(item)) close(item);
+      }
+    });
+    document.addEventListener('focusin', event => {
+      if (!keyboardNavigation || !(event.target instanceof Node)) return;
+      for (const item of disclosures) {
+        if (item.open && !item.contains(event.target)) close(item);
+      }
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Tab') keyboardNavigation = true;
       if (event.key !== 'Escape') return;
       const target = document.activeElement;
-      const open = disclosures.filter(item => item.open && item.contains(target)).at(-1);
+      const open = disclosures.filter(item => item.open && item.contains(target)).at(-1)
+        ?? disclosures.find(item => item.open);
       if (open) { event.preventDefault(); close(open, true); }
     });
-    document.addEventListener('pointerdown', event => { if (event.target instanceof Node) disclosures.forEach(item => { if (item.open && !item.contains(event.target as Node)) close(item); }); });
-    header.addEventListener('focusout', () => queueMicrotask(() => disclosures.forEach(item => { if (item.open && !item.contains(document.activeElement)) close(item); })));
+    for (const item of disclosures) {
+      item.addEventListener('toggle', () => {
+        if (!item.open) close(item);
+      });
+    }
     const breakpoint = matchMedia('(min-width: 75rem)');
     breakpoint.addEventListener('change', () => disclosures.forEach(item => close(item)));
-    const update = () => header.classList.toggle('compact', window.scrollY > 80);
-    window.addEventListener('scroll', update, { passive: true }); update();
+    // A fixed minimum outer footprint prevents scroll anchoring feedback.
+    // Hysteresis prevents rapid state changes near the compact threshold.
+    const update = () => {
+      const y = window.scrollY;
+      if (y >= 112) header.classList.add('compact');
+      else if (y <= 56) header.classList.remove('compact');
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
   }
 </script>
 <style>
-.site-header { position:sticky; top:0; z-index:20; background:var(--surface-page); border-bottom:1px solid var(--border-decorative); }
-.header-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:.65rem; min-height:4.5rem; padding-block:.5rem; position:relative; }
+.site-header { --header-reserve:4.5rem; position:sticky; top:0; z-index:20; min-block-size:calc(var(--header-reserve) + 1px); flex-shrink:0; pointer-events:none; }
+.header-surface { background:var(--surface-page); border-bottom:1px solid var(--border-decorative); pointer-events:auto; }
+.header-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:.65rem; min-height:var(--header-reserve); padding-block:.5rem; position:relative; }
 .compact .header-row { min-height:3.75rem; }
-.brand { font-weight:600; font-size:clamp(.75rem,1.25vw,1rem); line-height:1.3; text-decoration:none; padding-block:.5rem; overflow-wrap:anywhere; }
+.brand { min-height:44px; display:flex; align-items:center; font-weight:600; font-size:clamp(.75rem,1.25vw,1rem); line-height:1.3; text-decoration:none; padding-block:.5rem; overflow-wrap:anywhere; }
 .enquire { background:var(--action-primary-bg); color:var(--action-primary-text); text-decoration:none; font-size:.85rem; font-weight:600; padding:.65rem .7rem; min-height:44px; display:flex; align-items:center; white-space:nowrap; }
 nav a, summary { min-height:44px; display:flex; align-items:center; padding:.5rem .65rem; text-decoration:none; font-weight:500; font-size:.95rem; }
 summary { cursor:pointer; list-style:none; gap:.35rem; } summary::-webkit-details-marker { display:none; }
 nav a:hover, summary:hover, [aria-current='page'] { text-decoration:underline; text-underline-offset:.3em; }
 .desktop-nav,.wide-label { display:none; }
 .mobile-panel,.service-panel { position:absolute; inset-inline:var(--page-padding); top:100%; background:var(--surface-page); border:1px solid var(--border-interactive); padding:1rem; max-height:calc(100dvh - 6rem); overflow:auto; }
+details:not([open]) > .mobile-panel, details:not([open]) > .service-panel, details:not([open]) > .mobile-services { display:none; }
 .mobile-panel a,.mobile-panel summary { border-bottom:1px solid var(--border-decorative); } .mobile-services { padding-inline-start:1rem; }
-@media(min-width:75rem) { .header-row { grid-template-columns:minmax(12rem,1fr) auto auto; gap:1.5rem; min-height:5rem; } .compact .header-row { min-height:4rem; } .desktop-nav { display:flex; align-items:center; grid-column:2; grid-row:1; gap:.5rem; } .enquire { grid-column:3; grid-row:1; padding-inline:1.25rem; } .wide-label { display:inline; white-space:pre; } .mobile-nav { display:none; } .service-panel { max-width:42rem; inset-inline:auto var(--page-padding); } .service-links { display:grid; grid-template-columns:1fr 1fr; gap:1rem; } .service-links a { display:grid; gap:.25rem; border-top:1px solid var(--border-decorative); } .service-links a span:last-child { font-size:.85rem; } .all-services { text-decoration:underline; } }
+@media(min-width:75rem) { .site-header { --header-reserve:5rem; } .header-row { grid-template-columns:minmax(12rem,1fr) auto auto; gap:1.5rem; } .compact .header-row { min-height:4rem; } .desktop-nav { display:flex; align-items:center; grid-column:2; grid-row:1; gap:.5rem; } .enquire { grid-column:3; grid-row:1; padding-inline:1.25rem; } .wide-label { display:inline; white-space:pre; } .mobile-nav { display:none; } .service-panel { max-width:42rem; inset-inline:auto var(--page-padding); } .service-links { display:grid; grid-template-columns:1fr 1fr; gap:1rem; } .service-links a { display:grid; gap:.25rem; border-top:1px solid var(--border-decorative); } .service-links a span:last-child { font-size:.85rem; } .all-services { text-decoration:underline; } }
 </style>

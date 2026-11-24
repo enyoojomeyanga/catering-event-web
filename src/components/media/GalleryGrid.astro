@@ -1,0 +1,34 @@
+---
+import { getImage } from 'astro:assets';
+import ResponsiveImage from './ResponsiveImage.astro';
+import type { Photo } from '../../lib/portfolio';
+interface Props { items: { photo: Photo; categories: string[] }[]; }
+const { items } = Astro.props;
+const images = await Promise.all(items.map(async item => ({ ...item, large: await getImage({src:item.photo.src,width:Math.min(item.photo.src.width,1920),format:'webp',quality:85}) })));
+---
+<div class="photo-grid" data-photo-grid>{images.map(({photo,categories,large})=><figure data-filter-item data-categories={categories.join(' ')}><a href={large.src} data-lightbox-photo data-alt={photo.alt} data-caption={photo.caption ?? ''} aria-label={`View larger image: ${photo.alt}`}><ResponsiveImage photo={photo}/></a>{photo.caption && <figcaption>{photo.caption}</figcaption>}</figure>)}</div>
+<dialog data-lightbox aria-label="Image viewer"><div class="viewer"><div class="viewer-controls"><button type="button" data-prev aria-label="Previous image">←</button><p data-position aria-live="polite"></p><button type="button" data-next aria-label="Next image">→</button><button type="button" data-close aria-label="Close image viewer">Close ×</button></div><img data-full alt="" hidden/><p data-caption-text></p><p data-image-error role="status" hidden>Image could not be loaded. Try another photograph or close the viewer.</p></div></dialog>
+<script>
+ const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+ if (dialog) {
+   const image = dialog.querySelector<HTMLImageElement>('[data-full]')!;
+   const caption = dialog.querySelector<HTMLElement>('[data-caption-text]')!;
+   const position = dialog.querySelector<HTMLElement>('[data-position]')!;
+   const prev = dialog.querySelector<HTMLButtonElement>('[data-prev]')!;
+   const next = dialog.querySelector<HTMLButtonElement>('[data-next]')!;
+   const close = dialog.querySelector<HTMLButtonElement>('[data-close]')!;
+   const error = dialog.querySelector<HTMLElement>('[data-image-error]')!;
+   image.addEventListener('error',()=>{ if(dialog.open) error.hidden=false; });
+   image.addEventListener('load',()=>{error.hidden=true;});
+   let links: HTMLAnchorElement[] = [], index = 0, trigger: HTMLAnchorElement | null = null;
+   function show(i: number) { index = (i+links.length)%links.length; const link=links[index]; error.hidden=true; image.hidden=false; image.src=link.href; image.alt=link.dataset.alt ?? ''; caption.textContent=link.dataset.caption ?? ''; position.textContent=`${index+1} of ${links.length}`; prev.disabled=next.disabled=links.length<2; }
+   document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-photo]').forEach(link=>link.addEventListener('click',event=>{ if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||typeof dialog.showModal!=='function') return; event.preventDefault(); links=Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-photo]')).filter(a=>!a.closest('[hidden]')); trigger=link; show(links.indexOf(link)); dialog.showModal(); close.focus(); }));
+   prev.addEventListener('click',()=>show(index-1)); next.addEventListener('click',()=>show(index+1)); close.addEventListener('click',()=>dialog.close());
+   dialog.addEventListener('keydown',event=>{ if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();show(index+(event.key==='ArrowLeft'?-1:1));} });
+   dialog.addEventListener('close',()=>{image.hidden=true;image.removeAttribute('src');trigger?.focus();});
+ }
+</script>
+<style>
+.photo-grid { display:grid; gap:1.5rem; } figure { margin:0; } figure[hidden] { display:none; } figcaption { padding-block:.5rem; font-size:.875rem; } @media(min-width:40rem){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));}} @media(min-width:64rem){.photo-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+dialog { position:fixed; inset:0; margin:auto; border:1px solid var(--border-decorative); padding:1rem; width:min(92vw,80rem); max-height:92dvh; overflow:auto; background:var(--surface-page); color:var(--text-primary); } dialog::backdrop { background:rgb(0 0 0 / .8); } .viewer { display:grid; gap:.75rem; } .viewer-controls { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; } .viewer-controls p { flex:1; } button { min-height:44px; min-width:44px; border:1px solid var(--border-interactive); background:var(--surface-page); color:inherit; padding:.5rem; cursor:pointer; font:inherit; } button:disabled{opacity:.5;cursor:default;} .viewer img[hidden] { display:none; } .viewer img { width:100%; max-height:65dvh; object-fit:contain; }
+</style>

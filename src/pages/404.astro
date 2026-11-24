@@ -2,4 +2,4 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
 ---
-<BaseLayout title="Page not found" description="The requested page could not be found."><section class="section container stack"><p class="eyebrow">404 / Page not found</p><h1>Let's find your way.</h1><p>The page you requested is unavailable. Explore our services or return to the homepage.</p><div class="action-row"><Button href="/">Back to home</Button><Button href="/services" variant="secondary">Explore services</Button></div></section></BaseLayout>
+<BaseLayout indexable={false} title="Page not found" description="The requested page could not be found."><section class="section container stack"><p class="eyebrow">404 / Page not found</p><h1>Let's find your way.</h1><p>The page you requested is unavailable. Explore our services or return to the homepage.</p><div class="action-row"><Button href="/">Back to home</Button><Button href="/services" variant="secondary">Explore services</Button></div></section></BaseLayout>

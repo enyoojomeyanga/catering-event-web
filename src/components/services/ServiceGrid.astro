@@ -2,8 +2,11 @@
 import { services, type Service } from '../../data/services';
 interface Props { items?: readonly Service[]; }
 const { items = services } = Astro.props;
+import { publishedProjects } from "../../lib/portfolio";
+import ResponsiveImage from "../media/ResponsiveImage.astro";
+const projects = await publishedProjects();
 ---
-<div class="service-grid">{items.map(service => <article class="service-card"><p class="eyebrow">0{services.indexOf(service)+1} / Specialties</p><h3><a href={`/services/${service.slug}`}>{service.title}</a></h3><p>{service.description}</p><span class="service-arrow" aria-hidden="true">↗</span></article>)}</div>
+<div class="service-grid">{items.map(service => <article class="service-card">{projects.find(p=>p.data.services.includes(service.slug))?.data.cover && <ResponsiveImage photo={projects.find(p=>p.data.services.includes(service.slug))!.data.cover!} kind="service"/>}<p class="eyebrow">0{services.indexOf(service)+1} / Specialties</p><h3><a href={`/services/${service.slug}`}>{service.title}</a></h3><p>{service.description}</p><span class="service-arrow" aria-hidden="true">↗</span></article>)}</div>
 <style>
 .service-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--border-decorative); border-left:1px solid var(--border-decorative); }
 .service-card { position:relative; display:grid; align-content:start; gap:.85rem; padding:clamp(1.25rem,4vw,3rem); min-height:clamp(13rem,23vw,19rem); border-right:1px solid var(--border-decorative); border-bottom:1px solid var(--border-decorative); }

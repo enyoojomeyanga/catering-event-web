@@ -1,6 +1,6 @@
 {
   "name": "catering-events-website",
-  "version": "0.3.0",
+  "version": "0.5.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,7 +11,13 @@
     "check": "astro check",
     "build": "astro build",
     "preview": "astro preview",
-    "validate": "npm run check && npm run build"
+    "validate": "npm run check && npm run build",
+    "test": "playwright test",
+    "test:report": "playwright show-report",
+    "test:install": "playwright install chromium",
+    "audit:assets": "node scripts/asset-budget.mjs",
+    "qa": "npm run validate && npm run audit:assets && npm test",
+    "test:navigation": "playwright test tests/navigation.spec.ts"
   },
   "dependencies": {
     "astro": "7.4.13",
@@ -20,6 +26,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.11",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "@playwright/test": "1.65.1",
+    "@axe-core/playwright": "4.14.0"
   }
 }
