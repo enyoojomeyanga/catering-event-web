@@ -1,0 +1,8 @@
+---
+interface Props { items: readonly { question: string; answer: string }[]; }
+const { items } = Astro.props;
+---
+<div class="faq-list">{items.map(item => <details><summary>{item.question}<span aria-hidden="true" class="indicator"></span></summary><p>{item.answer}</p></details>)}</div>
+<style>
+.faq-list { max-width:70ch; border-top:1px solid var(--border-decorative); } details { border-bottom:1px solid var(--border-decorative); } summary { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:44px; padding:1.1rem .15rem; font-weight:600; cursor:pointer; list-style:none; } summary::-webkit-details-marker { display:none; } .indicator::before { content:'+'; font-size:1.5rem; line-height:1; } details[open] .indicator::before { content:'−'; } details p { padding:0 .15rem 1.25rem; }
+</style>

@@ -1,0 +1,45 @@
+:root {
+  --color-brand-dark: #66615D;
+  --color-brand-cream: #FCFCF7;
+  --color-brand-grey: #BEB6AF;
+  --color-brand-taupe: #A99C95;
+  --color-brand-blush: #E1BCB5;
+  --surface-page: var(--color-brand-cream);
+  --surface-inverse: var(--color-brand-dark);
+  --surface-muted: var(--color-brand-grey);
+  --surface-support: var(--color-brand-taupe);
+  --surface-accent: var(--color-brand-blush);
+  --text-primary: var(--color-brand-dark);
+  --text-inverse: var(--color-brand-cream);
+  --text-on-muted: #242424;
+  --border-decorative: var(--color-brand-grey);
+  --border-interactive: var(--color-brand-dark);
+  --action-primary-bg: var(--color-brand-dark);
+  --action-primary-text: var(--color-brand-cream);
+  --focus-light: var(--color-brand-dark);
+  --focus-dark: var(--color-brand-cream);
+  --focus-color: var(--focus-light);
+  --font-body: 'Manrope Variable', Arial, sans-serif;
+  --font-editorial: 'Newsreader Variable', Georgia, serif;
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem;
+  --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem;
+  --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem;
+  --space-20: 5rem; --space-24: 6rem; --space-30: 7.5rem;
+  --page-padding: clamp(1rem, 4vw, 4rem);
+  --section-space: clamp(3rem, 8vw, 7.5rem);
+  --container-max: 90rem;
+  --reading-max: 70ch;
+  --grid-columns: 4; --grid-gap: .75rem;
+  --radius: 0; --target-min: 2.75rem;
+  --motion-fast: 180ms; --motion-standard: 220ms;
+  --type-display: clamp(2.375rem, 4.8vw, 4.5rem);
+  --type-h1: clamp(2.125rem, 4vw, 3.5rem);
+  --type-h2: clamp(1.75rem, 3vw, 2.75rem);
+  --type-h3: clamp(1.375rem, 2vw, 1.75rem);
+  --type-body: clamp(1rem, .95rem + .2vw, 1.0625rem);
+}
+@media (min-width: 40rem) { :root { --grid-columns: 8; --grid-gap: 1.25rem; } }
+@media (min-width: 64rem) { :root { --grid-columns: 12; --grid-gap: 1.5rem; } }
+@media (min-width: 90rem) { :root { --grid-gap: 2rem; } }
+
+/* Root-relative fluid scales retain user font-size preferences. */

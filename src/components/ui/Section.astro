@@ -1,0 +1,5 @@
+---
+interface Props { inverse?: boolean; }
+const { inverse = false } = Astro.props;
+---
+<section class:list={['section', { inverse }]}><div class="container"><slot /></div></section>

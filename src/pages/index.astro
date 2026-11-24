@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import BookingSteps from '../components/home/BookingSteps.astro';
+import ServiceGrid from '../components/services/ServiceGrid.astro';
+import SectionHeading from '../components/shared/SectionHeading.astro';
+import FaqAccordion from '../components/shared/FaqAccordion.astro';
+import BookingCTA from '../components/shared/BookingCTA.astro';
+import Button from '../components/ui/Button.astro';
+import { faqs } from '../data/faqs';
+import { business } from '../data/business';
+---
+<BaseLayout title={`Catering & Events | ${business.registeredName}`} description="Catering, event decoration, custom cakes and confectionery in Kogi State, Abuja and across Nigeria.">
+ <HomeHero />
+ <section class="section container stack-large"><SectionHeading eyebrow="01 / What we do" title="Our four specialties." description="Book individually or bring multiple services together for your occasion."/><ServiceGrid /></section>
+ <!-- Verified work and testimonials are deliberately omitted until supplied. -->
+ <section class="section inverse"><div class="container split"><div class="stack"><p class="eyebrow">Our commitment</p><h2>{business.motto}.</h2><span class="accent-rule" aria-hidden="true"></span></div><div class="stack"><p class="lead">One team bringing food, creativity and celebration together.</p><p>Explore our services and discuss an arrangement tailored to your needs.</p><div><Button href="/about" variant="inverse">Discover our story</Button></div></div></div></section>
+ <section class="section container stack-large"><SectionHeading eyebrow="02 / Getting started" title="How to book."/><BookingSteps /></section>
+ <section class="section container ruled stack-large"><SectionHeading eyebrow="03 / Good to know" title="Frequently asked questions."/><FaqAccordion items={[faqs[0],faqs[2],faqs[3]]}/><div><Button href="/faq" variant="text">View all questions ↗</Button></div></section>
+ <BookingCTA />
+</BaseLayout>

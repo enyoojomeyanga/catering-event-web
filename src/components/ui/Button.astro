@@ -1,0 +1,15 @@
+---
+interface Props { href?: string; variant?: 'primary' | 'secondary' | 'text' | 'inverse'; type?: 'button' | 'submit'; }
+const { href, variant = 'primary', type = 'button' } = Astro.props;
+---
+{href ? <a class:list={['action', variant]} href={href}><slot /></a> : <button class:list={['action', variant]} type={type}><slot /></button>}
+<style>
+.action { display:inline-flex; align-items:center; justify-content:center; min-height:var(--target-min); padding:.65rem 1.25rem; border:1px solid currentColor; font-weight:600; font-size:1rem; line-height:1.4; text-align:center; text-decoration:none; background:transparent; color:inherit; border-radius:0; transition:background-color var(--motion-fast),color var(--motion-fast); }
+.primary { background:var(--color-brand-dark); color:var(--color-brand-cream); border-color:var(--color-brand-dark); }
+.inverse { background:var(--color-brand-cream); color:var(--color-brand-dark); border-color:var(--color-brand-cream); }
+.text { border-color:transparent; padding-inline:0; text-decoration:underline; }
+.primary:hover { background:var(--color-brand-cream); color:var(--color-brand-dark); }
+.secondary:hover,.inverse:hover { background:var(--color-brand-dark); color:var(--color-brand-cream); }
+.inverse:hover { border-color:var(--color-brand-cream); }
+.text:hover { text-decoration-thickness:2px; }
+</style>

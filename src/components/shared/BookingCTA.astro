@@ -1,0 +1,9 @@
+---
+import Button from '../ui/Button.astro';
+import Section from '../ui/Section.astro';
+import { whatsappLink } from '../../lib/whatsapp';
+interface Props { message?: string; title?: string; }
+const { message, title = 'Your occasion starts here.' } = Astro.props;
+---
+<Section inverse><div class="booking"><div class="stack"><h2>{title}</h2><p>Discuss your requirements, availability and quotation directly with the team.</p></div><div><Button href={whatsappLink(message)} variant="inverse">Book on WhatsApp</Button></div></div></Section>
+<style>.booking { display:grid; gap:1.5rem; align-items:center; } @media(min-width:48rem){ .booking { grid-template-columns:minmax(0,2fr) auto; } }</style>

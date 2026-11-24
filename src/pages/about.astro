@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/shared/Breadcrumbs.astro';
+import BookingCTA from '../components/shared/BookingCTA.astro';
+import ServiceGrid from '../components/services/ServiceGrid.astro';
+import { business } from '../data/business';
+---
+<BaseLayout title="About | Catering & Events" description="Learn about our catering and events services and where we operate.">
+ <Breadcrumbs items={[{label:'Home',href:'/'},{label:'About'}]}/>
+ <section class="section container split"><div class="stack"><p class="eyebrow">About the business</p><h1>Our story.</h1><span class="accent-rule" aria-hidden="true"></span><p class="lead">Food, creativity and celebration, brought together.</p></div><div class="stack"><p>{business.registeredName} provides catering, indoor and outdoor event decoration, baking and custom cakes, and small chops and confectionery.</p><p>Customers can arrange individual services or discuss several services together for the same occasion.</p></div></section>
+ <section class="section inverse"><div class="container stack"><p class="eyebrow">Our guiding motto</p><h2 class="editorial display-note">{business.motto}.</h2></div></section>
+ <section class="section container stack-large"><h2>What we do.</h2><ServiceGrid /></section>
+ <section class="section container ruled split"><h2>Where we operate.</h2><div class="stack"><p>Our offices are in Idah and Anyigba, Kogi State. We primarily serve Kogi State and Abuja, with arrangements available across Nigeria.</p><a href="/contact">View office addresses ↗</a></div></section>
+ <BookingCTA />
+</BaseLayout>

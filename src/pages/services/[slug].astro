@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/shared/Breadcrumbs.astro';
+import BookingCTA from '../../components/shared/BookingCTA.astro';
+import FaqAccordion from '../../components/shared/FaqAccordion.astro';
+import ServiceGrid from '../../components/services/ServiceGrid.astro';
+import Button from '../../components/ui/Button.astro';
+import { services, type Service } from '../../data/services';
+import { whatsappLink } from '../../lib/whatsapp';
+export function getStaticPaths() { return services.map(service => ({ params: { slug: service.slug }, props: { service } })); }
+interface Props { service: Service; }
+const { service } = Astro.props;
+const message = `Hello, I would like to enquire about ${service.title.toLowerCase()}. Please let me know how to proceed.`;
+---
+<BaseLayout title={`${service.title} | Catering & Events`} description={service.introduction}>
+ <Breadcrumbs items={[{label:'Home',href:'/'},{label:'Services',href:'/services'},{label:service.title}]}/>
+ <section class="section container split"><div class="stack"><p class="eyebrow">0{services.indexOf(service)+1} / Our specialties</p><h1>{service.title}</h1><p class="editorial display-note">{service.headline}</p><span class="accent-rule" aria-hidden="true"></span><p class="lead">{service.introduction}</p><div><Button href={whatsappLink(message)}>Request a quote</Button></div></div><div class="stack editorial-panel"><h2>What we offer.</h2><ul class="offerings">{service.offerings.map(item=><li>{item}</li>)}</ul></div></section>
+ <section class="section inverse"><div class="container split"><h2>Tailored to your occasion.</h2><div class="stack"><p>Discuss your requirements, availability and quotation directly with the team. Book at least two weeks ahead where possible; last-minute requests depend on availability.</p><div><Button href={whatsappLink(message)} variant="inverse">Discuss your requirements</Button></div></div></div></section>
+ <section class="section container stack-large"><h2>Good to know.</h2><FaqAccordion items={[{question:service.question,answer:service.answer}]}/><div><Button href="/faq" variant="text">More questions ↗</Button></div></section>
+ <section class="section container ruled stack-large"><h2>Explore our other specialties.</h2><ServiceGrid items={services.filter(item=>item.slug!==service.slug)}/></section>
+ <BookingCTA message={message}/>
+</BaseLayout>

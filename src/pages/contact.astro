@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/shared/Breadcrumbs.astro';
+import Button from '../components/ui/Button.astro';
+import { business } from '../data/business';
+import { whatsappLink } from '../lib/whatsapp';
+---
+<BaseLayout title="Contact | Catering & Events" description="Contact our team on WhatsApp and find our offices in Idah and Anyigba, Kogi State.">
+ <Breadcrumbs items={[{label:'Home',href:'/'},{label:'Contact'}]}/>
+ <section class="section container stack-large"><div class="stack"><p class="eyebrow">Get in touch</p><h1>Let's discuss your <span class="editorial">occasion.</span></h1><p class="lead">Discuss services, availability and custom quotations.</p></div><div class="split"><div class="inverse contact-panel stack"><h2>WhatsApp enquiries</h2><p>0705 215 3205</p><div><Button href={whatsappLink()} variant="inverse">Open WhatsApp</Button></div><p>All bookings are arranged through WhatsApp.</p></div><div class="contact-panel stack"><h2>Other contact details</h2><div>{business.phones.map(phone=><a class="contact-link" href={`tel:+234${phone.slice(1)}`}>{phone}</a>)}<a class="contact-link" href={`mailto:${business.email}`}>{business.email}</a></div></div></div></section>
+ <section class="section container ruled stack-large"><h2>Our locations.</h2><div class="split">{business.offices.map(office=><div class="stack editorial-panel"><h3>{office.label}</h3><address>{office.address}</address></div>)}</div><p>Service coverage: {business.coverage}.</p></section>
+</BaseLayout>
+<style>.contact-panel { padding:clamp(1.25rem,4vw,3rem); border:1px solid var(--border-decorative); } .contact-link { display:flex; align-items:center; min-height:44px; overflow-wrap:anywhere; } address { font-style:normal; }</style>
