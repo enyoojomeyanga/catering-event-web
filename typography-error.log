@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 tests/typography.spec.ts:9:3 › TY-05 computed scale and wrapping at 320px (514ms)
+
+
+  1) tests/typography.spec.ts:9:3 › TY-05 computed scale and wrapping at 320px ─────────────────────
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 0.1
+    Received:   6
+
+      26 |         el.remove();return sizes;
+      27 |       });
+    > 28 |       [h2,h3,body,16].forEach((expected,i)=>expect(Math.abs(measured[i]-expected)).toBeLessThan(.1));
+         |                                                                                    ^
+      29 |       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),path).toBeTruthy();
+      30 |       const overflow=await page.locator('main :is(h1,h2,h3)').evaluateAll(nodes=>nodes.filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>el.textContent));
+      31 |       expect(overflow,path).toEqual([]);
+        at forEach (/home/l2euser/catering-events-web/tests/typography.spec.ts:28:84)
+        at /home/l2euser/catering-events-web/tests/typography.spec.ts:28:23
+
+    Error Context: test-results/typography-TY-05-computed-scale-and-wrapping-at-320px/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/typography-TY-05-computed-scale-and-wrapping-at-320px/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/typography-TY-05-computed-scale-and-wrapping-at-320px/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/typography.spec.ts:9:3 › TY-05 computed scale and wrapping at 320px ──────────────────────

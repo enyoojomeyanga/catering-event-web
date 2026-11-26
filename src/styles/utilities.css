@@ -6,12 +6,12 @@
 .eyebrow { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: none; }
 .skip-link { position: fixed; inset: 0 auto auto 1rem; padding: .75rem; background: var(--surface-page); color: var(--text-primary); transform: translateY(-150%); z-index: 100; }
 .skip-link:focus { transform: none; }
-.stack { display:grid; gap:1rem; align-content:start; }
-.stack-large { display:grid; gap:clamp(1.5rem,3vw,2.5rem); align-content:start; }
-.section-heading { display:grid; gap:1rem; max-width:65ch; }
-.split { display:grid; gap:clamp(1.5rem,4vw,3rem); align-items:start; }
+.stack { display:grid; gap:var(--paragraph-gap); align-content:start; }
+.stack-large { display:grid; gap:var(--action-gap); align-content:start; }
+.section-heading { display:grid; gap:var(--heading-gap); max-width:65ch; }
+.split { display:grid; gap:clamp(1.5rem,3vw,2rem); align-items:start; }
 @media(min-width:48rem){ .split { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-.action-row { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; }
+.action-row { display:flex; flex-wrap:wrap; align-items:center; gap:.75rem; }
 .lead { font-size:clamp(1.125rem,1rem + .35vw,1.25rem); }
 .display-note { font-size:clamp(2rem,4vw,3.5rem); line-height:1.15; }
 .accent-rule { display:block; width:3.25rem; height:3px; background:var(--lavender); }
@@ -20,10 +20,20 @@
 .offerings { padding:0; margin:0; list-style:none; }
 .offerings li { padding-block:.85rem; border-bottom:1px solid var(--border-decorative); }
 
-@media(min-width:64rem){.stack,.section-heading{gap:1.25rem}}
+
 
 .script-accent{font-family:var(--font-script);font-size:clamp(1.75rem,3.2vw,2.5rem);line-height:1.1;color:var(--accent-ink);font-weight:400}
-.center-heading{max-width:65ch;margin-inline:auto;text-align:center;display:grid;gap:1rem;justify-items:center}
+.center-heading{max-width:65ch;margin-inline:auto;text-align:center;display:grid;gap:var(--heading-gap);justify-items:center}
 .soft-section{background:var(--lavender-soft)}
 .media-frame{padding:.45rem;border-radius:calc(var(--image-radius) + .35rem);background:linear-gradient(135deg,var(--border),var(--green-soft));min-width:0}
-.photo-note{font-size:.8125rem;color:var(--muted);margin-top:.5rem}
+.photo-note{font-size:var(--type-caption);color:var(--muted);margin:0}
+
+/* Integrated heading sits in the first content section, not in an independent banner. */
+.page-heading{display:grid;gap:var(--heading-gap);align-content:start;min-width:0}
+.page-heading h1{max-width:28ch;min-width:0;max-inline-size:min(100%,28ch)}
+.page-heading p{max-width:60ch}
+.page-heading.centered{text-align:center;justify-items:center;margin-inline:auto}
+.page-heading.full-row{grid-column:1/-1;width:100%}
+.stack > .page-heading + *{margin-block-start:0}
+.stack > :is(h2,h3) + p{margin-block-start:calc(var(--heading-gap) - var(--paragraph-gap))}
+@media(max-width:39.99rem){.action-row > .action{max-width:100%}.split > *{min-width:0}}

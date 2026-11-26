@@ -5,13 +5,15 @@ import { whatsappLink } from '../../lib/whatsapp';
 const path=Astro.url.pathname.replace(/\/$/,'')||'/';
 const active=(href:string)=>path===href?'page':undefined;
 const sectionActive=(href:string)=>href!=='/'&&path.startsWith(href+'/');
+const current=(href:string)=>active(href)??(sectionActive(href)?'location':undefined);
+const isHome=path==='/';
 const name=business.displayName??business.registeredName;
 ---
-<header class="site-header" data-header><div class="header-surface"><div class="container header-row">
+<header class:list={["site-header", { "home-header": isHome }]} data-header><div class="header-surface"><div class="container header-row">
 <a class="brand" href="/" aria-label={`${name} home`}>{name}</a>
-<nav class="desktop-nav" aria-label="Primary">{navigation.filter(item=>item.href!=='/').map(item=><a href={item.href} aria-current={active(item.href)} class:list={[{'section-active':sectionActive(item.href)}]}>{item.label}</a>)}</nav>
-<a class="enquire" aria-label="Book on WhatsApp" href={whatsappLink()}>Book<span class="wide-label"> on WhatsApp</span></a>
-<details class="mobile-nav" data-disclosure><summary aria-label="Menu"><span class="menu-label">Menu</span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav class="mobile-panel" aria-label="Mobile primary">{navigation.map(item=><a href={item.href} aria-current={active(item.href)} class:list={[{'section-active':sectionActive(item.href)}]}>{item.label}</a>)}</nav></details>
+<nav class="desktop-nav" aria-label="Primary">{navigation.map(item=><a href={item.href} data-astro-prefetch="hover" aria-current={current(item.href)} class:list={[{'section-active':sectionActive(item.href)}]}>{item.label}</a>)}</nav>
+<a class="enquire desktop-book" aria-label="Book on WhatsApp" href={whatsappLink()}>Book on WhatsApp</a>
+<details class="mobile-nav" data-disclosure><summary aria-label="Menu"><span class="menu-label">Menu</span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav class="mobile-panel" aria-label="Mobile primary">{navigation.map(item=><a href={item.href} data-astro-prefetch="hover" aria-current={current(item.href)} class:list={[{'section-active':sectionActive(item.href)}]}>{item.label}</a>)}<a class="enquire mobile-book" href={whatsappLink()}>Book on WhatsApp</a></nav></details>
 </div></div></header>
 <script>
   const header = document.querySelector<HTMLElement>('[data-header]');
@@ -45,12 +47,14 @@ const name=business.displayName??business.registeredName;
         ?? disclosures.find(item => item.open);
       if (open) { event.preventDefault(); close(open, true); }
     });
-    const breakpoint = matchMedia('(min-width: 70rem)');
+    const breakpoint = matchMedia('(min-width: 76rem)');
     breakpoint.addEventListener('change', () => disclosures.forEach(item => close(item)));
     // A fixed minimum outer footprint prevents scroll anchoring feedback.
     // Hysteresis prevents rapid state changes near the compact threshold.
     const update = () => {
       const y = window.scrollY;
+      if (y <= 4) header.classList.add('at-top');
+      else if (y >= 16) header.classList.remove('at-top');
       if (y >= 112) header.classList.add('compact');
       else if (y <= 56) header.classList.remove('compact');
     };
@@ -59,7 +63,28 @@ const name=business.displayName??business.registeredName;
   }
 </script>
 <style>
-.site-header{--header-reserve:5rem;position:sticky;top:0;z-index:20;block-size:calc(var(--header-reserve) + 1px);flex-shrink:0;pointer-events:none}.header-surface{background:var(--white);border-bottom:1px solid var(--border);pointer-events:auto}.header-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:.5rem;min-height:var(--header-reserve);padding-block:.5rem;position:relative}.compact .header-row{min-height:4.25rem}.brand{font-family:var(--font-editorial);font-weight:600;font-size:clamp(.875rem,1.5vw,1.2rem);line-height:1.25;min-height:44px;display:flex;align-items:center;text-decoration:none}.enquire{background:var(--lavender);color:var(--plum);border-radius:100vw;text-decoration:none;font-size:.875rem;font-weight:500;min-height:44px;display:flex;align-items:center;padding:.65rem .9rem;white-space:nowrap}.enquire:hover{background:var(--border)}nav a,summary{min-height:44px;display:flex;align-items:center;padding:.5rem .65rem;text-decoration:none;font-size:.875rem;font-weight:500;color:var(--muted)}summary{cursor:pointer;list-style:none;gap:.25rem;justify-content:center;min-width:44px;padding-inline:.3rem}summary::-webkit-details-marker{display:none}nav a:hover,[aria-current='page'],.section-active{color:var(--accent-ink);text-decoration:underline;text-underline-offset:.3em}.desktop-nav,.wide-label,.menu-label{display:none}.mobile-panel{position:absolute;top:100%;inset-inline:var(--page-padding);background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;max-height:calc(100dvh - 6rem);overflow:auto;overscroll-behavior:contain;box-shadow:0 8px 24px #1f1b2e0d}.mobile-panel a{padding-inline:1rem;border-radius:.5rem}.mobile-panel a:hover{background:var(--lavender-soft)}.mobile-panel a:focus-visible{outline-offset:-3px}details:not([open])>.mobile-panel{display:none}
-@media(min-width:70rem){.site-header{--header-reserve:5rem}.header-row{grid-template-columns:minmax(0,1fr) auto auto;gap:1.25rem}.compact .header-row{min-height:4rem}.desktop-nav{display:flex;align-items:center;gap:.25rem}.enquire{padding-inline:1.25rem}.wide-label{display:inline;white-space:pre}.mobile-nav{display:none}}
-@media(prefers-reduced-motion:no-preference){.mobile-nav[open] .mobile-panel{animation:menu-appear 250ms ease-out}@keyframes menu-appear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}}
+.site-header{--header-reserve:5rem;position:sticky;top:0;z-index:20;block-size:calc(var(--header-reserve) + 1px);flex-shrink:0;pointer-events:none}
+.header-surface{background:var(--white);border-bottom:1px solid var(--border);pointer-events:auto;transition:background-color 200ms ease,border-color 200ms ease,box-shadow 200ms ease}
+.header-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.5rem;min-height:var(--header-reserve);padding-block:.5rem;position:relative}
+.brand{font-family:var(--font-editorial);font-weight:600;font-size:clamp(.875rem,1.5vw,1.2rem);line-height:1.25;min-height:44px;display:flex;align-items:center;text-decoration:none}
+.enquire{background:var(--lavender);color:var(--plum);border-radius:100vw;text-decoration:none;font-size:var(--type-nav);font-weight:500;min-height:44px;display:flex;align-items:center;padding:.65rem .9rem;white-space:nowrap}.enquire:hover{background:var(--border)}
+nav a,summary{min-height:44px;display:flex;align-items:center;padding:.5rem .65rem;text-decoration:none;font-size:var(--type-nav);font-weight:500;color:var(--muted)}
+summary{cursor:pointer;list-style:none;gap:.25rem;justify-content:center;min-width:44px;padding-inline:.3rem}summary::-webkit-details-marker{display:none}
+nav a{position:relative;border-radius:100vw;gap:.4rem;transition:background-color 200ms ease,color 200ms ease}
+nav a::before{content:'';flex:none;width:.375rem;height:.375rem;border-radius:50%;background:currentColor;visibility:hidden}
+nav a:not([aria-current]):hover{color:var(--accent-ink);background:var(--lavender-soft)}
+nav a[aria-current],nav a.section-active{background:var(--lavender);color:var(--plum);font-weight:600}
+nav a[aria-current]::before,nav a.section-active::before{visibility:visible;background:var(--accent-ink)}
+.desktop-nav,.desktop-book,.menu-label{display:none}
+.mobile-panel{position:absolute;top:100%;inset-inline:var(--page-padding);background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;max-height:calc(100dvh - 6rem);overflow:auto;overscroll-behavior:contain;box-shadow:0 8px 24px #1f1b2e0d;--focus-color:var(--focus-light)}
+.mobile-panel a{padding-inline:1rem;border-radius:.5rem}.mobile-panel a:not([aria-current]):hover{background:var(--lavender-soft)}.mobile-panel .mobile-book{margin-top:.65rem;justify-content:center;background:var(--lavender);color:var(--plum);border-radius:100vw;font-weight:600}.mobile-panel .mobile-book::before{display:none}.mobile-panel .mobile-book:hover{background:var(--border);color:var(--plum)}.mobile-panel a:focus-visible{outline-offset:-3px}details:not([open])>.mobile-panel{display:none}
+/* The homepage starts underneath the fixed-footprint header. Its own top scrim supplies contrast. */
+.home-header.at-top:not(.compact) .header-surface{background:transparent;border-color:transparent;--focus-color:#fff}
+.home-header.at-top:not(.compact) .brand,.home-header.at-top:not(.compact) summary,.home-header.at-top:not(.compact) .desktop-nav a:not([aria-current]){color:#fff}
+.home-header.at-top:not(.compact) .desktop-nav a:not([aria-current]):hover{color:var(--plum);background:var(--lavender)}
+.home-header.at-top:not(.compact) .enquire:focus-visible{outline-color:#fff}
+/* Never change the reserved or visible header height on scroll. */
+.compact .header-surface{box-shadow:0 2px 12px #1f1b2e0b}
+@media(min-width:76rem){.header-row{grid-template-columns:minmax(0,1fr) auto auto;gap:.75rem}.desktop-nav{display:flex;align-items:center;gap:.125rem}.desktop-nav a{padding-inline:.4rem}.enquire{padding-inline:1rem}.desktop-book{display:flex}.mobile-nav{display:none}}
+@media(prefers-reduced-motion:no-preference){.mobile-nav[open] .mobile-panel{animation:menu-appear 350ms cubic-bezier(.2,.7,.2,1)}@keyframes menu-appear{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}}
 </style>

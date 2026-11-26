@@ -1,6 +1,5 @@
 ---
-interface Props { title:string; description?:string; accent?:string; }
-const {title,description,accent}=Astro.props;
+interface Props { title: string; description?: string; align?: 'left' | 'center'; fullRow?: boolean; }
+const {title,description,align='left',fullRow=false}=Astro.props;
 ---
-<section class="page-hero"><div class="container center-heading"><span class="sparkle" aria-hidden="true">✦</span>{accent&&<p class="script-accent">{accent}</p>}<h1>{title}</h1>{description&&<p>{description}</p>}</div></section>
-<style>.page-hero{position:relative;background:var(--lavender-soft);padding-block:clamp(3.5rem,7vw,6rem);overflow:hidden}.sparkle{position:absolute;right:5%;top:12%;color:var(--lavender);font-size:2rem;pointer-events:none}.page-hero::after{content:'';position:absolute;bottom:1.5rem;left:3%;width:3.5rem;height:.6rem;border-bottom:2px solid var(--green-soft);border-radius:50%;pointer-events:none}</style>
+<header class:list={['page-heading', {centered:align==='center','full-row':fullRow}]}><h1 id="page-title">{title}</h1>{description&&<p>{description}</p>}</header>

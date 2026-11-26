@@ -20,7 +20,7 @@ for (const [label, route] of routes) {
       const link = menu.getByRole('link', { name: label, exact: true });
       await expect(link).toBeVisible();
       await link.tap();
-      await expect(page).toHaveURL(url => url.pathname.replace(/\/$/, '') === route.replace(/\/$/, ''));
+      await expect(page).toHaveURL(url => (url.pathname.replace(/\/$/, '') || '/') === route);
       await expect(mobileMenu(page)).not.toHaveAttribute('open', '');
     } finally { await context.close(); }
   });
@@ -47,14 +47,14 @@ test('flat mobile menu: escape, outside dismissal and resize', async ({ page }) 
   await expect(page.locator('.desktop-nav')).toBeVisible();
 });
 
-for (const [label, route] of routes.filter(([,route])=>route!=='/')) {
+for (const [label, route] of routes) {
   test(`desktop direct navigation: ${label}`,async({page})=>{
     await page.setViewportSize({width:1440,height:900});
-    await page.goto('/');
+    await page.goto(route === '/' ? '/about' : '/');
     const nav=page.locator('.desktop-nav');
     await expect(nav.locator('details')).toHaveCount(0);
     await nav.getByRole('link',{name:label,exact:true}).click();
-    await expect(page).toHaveURL(url=>url.pathname.replace(/\/$/,'')===route);
+    await expect(page).toHaveURL(url=>(url.pathname.replace(/\/$/,'')||'/')===route);
     await expect(nav.getByRole('link',{name:label,exact:true})).toHaveAttribute('aria-current','page');
   });
 }

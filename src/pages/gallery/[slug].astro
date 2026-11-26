@@ -14,8 +14,7 @@ const {project,related}=Astro.props;
 const data=project.data;
 ---
 <BaseLayout title={`${data.title} | Catering & Events`} description={data.description}>
-<PageHero title={data.title} description={data.description}/>
-<section class="section container stack-large"><div class="stack"><p>{data.eventType}</p>{data.location&&<p>{data.location}</p>}{data.date&&<p>{data.date}</p>}<p>{services.filter(s=>data.services.includes(s.slug)).map(s=><a class="service-link" href={`/services/${s.slug}`}>{s.title}</a>)}</p></div>{data.cover&&<ResponsiveImage photo={data.cover} kind="hero" eager/>}<div class="stack"><h2>Project photographs</h2><GalleryGrid items={projectPhotos(project).map(photo=>({photo,categories:data.services}))}/></div></section>
+<section class="section container stack-large" aria-labelledby="page-title"><PageHero title={data.title} description={data.description}/><div class="stack"><p>{data.eventType}</p>{data.location&&<p>{data.location}</p>}{data.date&&<p>{data.date}</p>}<p>{services.filter(s=>data.services.includes(s.slug)).map(s=><a class="service-link" href={`/services#${s.slug}`}>{s.title}</a>)}</p></div>{data.cover&&<ResponsiveImage photo={data.cover} kind="hero" eager/>}<div class="stack"><h2>Project photographs</h2><GalleryGrid items={projectPhotos(project).map(photo=>({photo,categories:data.services}))}/></div></section>
 <TestimonialSection projects={[project]}/><ProjectSection projects={related} title="Related work"/><BookingCTA message={`Hello, I saw your project ${data.title} and would like to discuss my occasion.`}/>
 </BaseLayout>
 <style>.service-link { display:inline-block; margin-inline-end:1rem; min-height:44px; padding-block:.5rem; }</style>

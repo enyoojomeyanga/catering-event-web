@@ -15,6 +15,5 @@ const projects=(await publishedProjects()).filter(p=>p.data.services.includes(se
 const photos=projects.length?projects.flatMap(p=>projectPhotos(p).map(photo=>({photo,categories:p.data.services}))):serviceIllustrations(service.slug);
 ---
 <BaseLayout indexable={projects.length>0} title={`${service.title} portfolio`} description={`Browse ${service.title.toLowerCase()} imagery and completed projects when available.`}>
-<PageHero title={`${service.title} portfolio`}/>
-<section class="section container stack-large" data-gallery><div><Button href="/gallery" variant="text">Back to portfolio</Button></div>{!projects.length&&<p>Illustrative imagery for inspiration, not photographs of completed client work.</p>}{projects.length>0&&<section class="stack"><h2>Completed projects</h2><ProjectGrid projects={projects}/></section>}<GalleryGrid items={photos}/></section><BookingCTA message={`Hello, I would like to enquire about ${service.title.toLowerCase()}.`}/>
+<section class="section container stack-large" data-gallery aria-labelledby="page-title"><div class="stack"><PageHero title={`${service.title} portfolio`}/><div><Button href="/gallery" variant="text">Back to portfolio</Button></div></div>{!projects.length&&<p>Illustrative imagery for inspiration, not photographs of completed client work.</p>}{projects.length>0&&<section class="stack"><h2>Completed projects</h2><ProjectGrid projects={projects}/></section>}<GalleryGrid items={photos}/></section><BookingCTA message={`Hello, I would like to enquire about ${service.title.toLowerCase()}.`}/>
 </BaseLayout>

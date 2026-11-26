@@ -4,7 +4,9 @@ import '@fontsource-variable/playfair-display/wght.css';
 import '@fontsource-variable/playfair-display/wght-italic.css';
 import '@fontsource/tangerine/400.css';
 import '../styles/global.css';
+import LoadingExperience from '../components/shared/LoadingExperience.astro';
 import Header from '../components/navigation/Header.astro';
+import BackToTop from '../components/navigation/BackToTop.astro';
 import Footer from '../components/navigation/Footer.astro';
 import { business } from '../data/business';
 import { businessSchema, canIndex, canonicalUrl } from '../lib/seo';
@@ -34,12 +36,15 @@ const pageTitle = title.replace(/ \| Catering & Events$/, '') + ` | ${brand}`;
     {canonical && <meta property="og:url" content={canonical} />}
     {schema && <script type="application/ld+json" is:inline set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />}
   </head>
-  <body>
+  <body id="page-top">
+    <LoadingExperience />
     <a class="skip-link" href="#main">Skip to content</a>
     <Header />
     <main id="main" tabindex="-1"><slot /></main>
     <Footer />
+    <BackToTop />
     <script>
+      import '../scripts/image-loading';
       // Content is visible by default; reveals are enhancement only.
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
         const observer = new IntersectionObserver(entries => {

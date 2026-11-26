@@ -5,7 +5,7 @@ import { services } from '../../data/services';
 interface Props { projects: Project[]; }
 const { projects } = Astro.props;
 ---
-<div class="project-grid">{projects.map(project => <article data-filter-item data-categories={project.data.services.join(' ')} class="project-card stack">{project.data.cover && <ResponsiveImage photo={project.data.cover}/>}<p class="eyebrow">{project.data.eventType}</p><h3><a href={`/gallery/${project.id}`}>{project.data.title}</a></h3><p>{services.filter(s=>project.data.services.includes(s.slug)).map(s=>s.title).join(' · ')}</p>{project.data.location && <p>{project.data.location}</p>}</article>)}</div>
+<div class="project-grid">{projects.map(project => <article data-filter-item data-categories={project.data.services.join(' ')} class="project-card stack">{project.data.cover && <ResponsiveImage photo={project.data.cover} kind="service"/>}<p class="eyebrow">{project.data.eventType}</p><h3><a href={`/gallery/${project.id}`}>{project.data.title}</a></h3><p>{services.filter(s=>project.data.services.includes(s.slug)).map(s=>s.title).join(' · ')}</p>{project.data.location && <p>{project.data.location}</p>}</article>)}</div>
 <style>
-.project-grid { display:grid; gap:clamp(1.5rem,4vw,3rem); } .project-card { border-bottom:1px solid var(--border-decorative); padding-bottom:1.5rem; } .project-card[hidden] { display:none; } @media(min-width:48rem){ .project-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.project-grid { display:grid; gap:var(--grid-gap); } .project-card { border-bottom:1px solid var(--border-decorative); padding-bottom:var(--paragraph-gap); } .project-card[hidden] { display:none; } @media(min-width:48rem){ .project-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 </style>

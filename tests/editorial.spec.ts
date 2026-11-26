@@ -6,9 +6,10 @@ for(const width of [320,375,1440]){
    await page.goto(path);
    await expect(page.locator('body')).not.toContainText('Integrity is our pride');
    await expect(page.locator('body')).not.toContainText('↗');
-   await expect(page.locator('footer .copyright')).toHaveCSS('text-align',width>=768?'left':'center');
-   await expect(page.locator('footer a[href^="tel:"]')).toHaveCount(2);
-   await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(1);
+   await expect(page.locator('footer .footer-contact')).toHaveCount(0);
+   await expect(page.locator('footer .copyright')).toHaveCSS('text-align','center');
+   await expect(page.locator('footer a[href^="tel:"]')).toHaveCount(0);
+   await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
   }
  });

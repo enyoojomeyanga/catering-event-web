@@ -7,7 +7,7 @@ const {src}=heroIllustration;
 const widths=[480,768,1024,1280,src.width].filter((w,i,a)=>w<=src.width&&a.indexOf(w)===i);
 ---
 <section class="home-hero" aria-labelledby="hero-title">
-  <Image src={src} alt="" width={src.width} widths={widths} sizes="100vw" format="webp" quality={82} loading="eager" fetchpriority="high" decoding="async" class="hero-image" />
+  <Image src={src} alt="" width={src.width} widths={widths} sizes="100vw" format="webp" quality={82} loading="eager" fetchpriority="high" decoding="async" class="hero-image" data-managed-image data-hero-image />
   <div class="container hero-content">
     <div class="hero-copy">
       <h1 id="hero-title">Making your occasions <em>special.</em></h1>
@@ -17,17 +17,26 @@ const widths=[480,768,1024,1280,src.width].filter((w,i,a)=>w<=src.width&&a.index
   </div>
 </section>
 <style>
-.home-hero{position:relative;isolation:isolate;display:grid;align-items:center;min-height:calc(100vh - 5rem - 1px);min-height:calc(100svh - 5rem - 1px);background:var(--plum);color:white;--focus-color:#fff}
+.home-hero{position:relative;isolation:isolate;display:grid;align-items:center;margin-top:calc(-5rem - 1px);min-height:100vh;min-height:100svh;background:var(--plum);color:white;--focus-color:#fff}
 .hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:65% center;z-index:-2}
-.home-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgb(18 14 28 / .88) 0%,rgb(18 14 28 / .72) 48%,rgb(18 14 28 / .20) 100%);pointer-events:none}
-.hero-content{padding-block:clamp(3rem,9vh,7rem)}
-.hero-copy{display:grid;gap:1.5rem;max-width:40rem}
+.home-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgb(18 14 28 / .78) 0,rgb(18 14 28 / .65) 5rem,transparent 10rem),linear-gradient(90deg,rgb(18 14 28 / .70) 0%,rgb(18 14 28 / .60) 38%,rgb(18 14 28 / .22) 65%,transparent 88%);pointer-events:none}
+.hero-content{padding-block:calc(5rem + clamp(2rem,6vh,5rem)) clamp(3rem,9vh,7rem)}
+.hero-copy{display:grid;gap:var(--action-gap);max-width:40rem}
 .hero-copy h1{color:white;font-size:var(--type-display);max-width:17ch;line-height:1.15}
 .hero-copy em{color:#E8DAFA;font-weight:500}
-.hero-copy p{color:white;max-width:48ch;font-size:clamp(1rem,1.4vw,1.125rem)}
+.hero-copy p{color:white;max-width:48ch;font-size:var(--type-body)}
 .hero-copy :global(.secondary){color:white;border-color:white;background:rgb(18 14 28 / .35)}
 .hero-copy :global(.secondary:hover){background:white;color:var(--plum)}
 .hero-copy :global(.action:focus-visible){outline-color:white}
-@media(max-width:47.99rem){.home-hero::before{background:rgb(18 14 28 / .76)}.hero-image{object-position:66% center}}
-@media(prefers-reduced-motion:no-preference){.hero-copy{animation:hero-enter 600ms ease-out both}@keyframes hero-enter{from{transform:translateY(12px)}to{transform:none}}}
+@media(max-width:63.99rem){
+ .home-hero{align-items:end}
+ .hero-content{padding-block:calc(5rem + 2rem) clamp(1.5rem,4vh,3rem)}
+ .hero-copy{max-width:34rem;gap:1rem}
+ .hero-image{object-position:70% center}
+ .home-hero::before{background:linear-gradient(180deg,rgb(18 14 28 / .8) 0,rgb(18 14 28 / .68) 5rem,transparent 10rem),linear-gradient(0deg,rgb(18 14 28 / .84) 0%,rgb(18 14 28 / .72) 15rem,rgb(18 14 28 / .55) 22rem,transparent 34rem)}
+}
+@media(max-width:27rem){.hero-copy .action-row{display:grid;grid-template-columns:minmax(0,1fr);justify-items:stretch;gap:.65rem}.hero-copy h1{max-width:18ch}}
+@media(max-height:36rem) and (orientation:landscape){.hero-content{padding-block:6rem 1.5rem}.hero-copy{gap:.75rem}.hero-copy h1{font-size:clamp(2.75rem,5.5vw,3.25rem)}.home-hero::before{background:linear-gradient(180deg,rgb(18 14 28 / .8) 0,transparent 9rem),linear-gradient(90deg,rgb(18 14 28 / .78) 0%,rgb(18 14 28 / .65) 65%,transparent 100%)}}
+
+@media(prefers-reduced-motion:no-preference){.hero-copy > *{animation:hero-enter 800ms cubic-bezier(.2,.7,.2,1) both}.hero-copy > :nth-child(2){animation-delay:100ms}.hero-copy > :nth-child(3){animation-delay:200ms}@keyframes hero-enter{from{transform:translateY(22px)}to{transform:none}}}
 </style>

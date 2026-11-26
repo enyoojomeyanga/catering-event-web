@@ -2,10 +2,18 @@
   "extends": "astro/tsconfigs/strict",
   "include": [
     ".astro/types.d.ts",
-    "**/*"
+    "src/**/*",
+    "tests/**/*.ts",
+    "playwright.config.ts",
+    "astro.config.mjs",
+    "scripts/**/*.mjs"
   ],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "playwright-report",
+    "test-results",
+    "coverage",
+    ".vercel"
   ]
 }

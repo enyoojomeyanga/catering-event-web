@@ -5,4 +5,4 @@ import FaqAccordion from '../components/shared/FaqAccordion.astro';
 import BookingCTA from '../components/shared/BookingCTA.astro';
 import {faqs} from '../data/faqs';
 ---
-<BaseLayout title="FAQs" description="Answers to common questions about bookings, quotations and independent orders."><PageHero title="Frequently asked questions"/><section class="section container"><FaqAccordion items={faqs}/></section><BookingCTA title="Have another question?"/></BaseLayout>
+<BaseLayout title="FAQs" description="Answers to common questions about bookings, quotations and independent orders."><section class="section container stack-large" aria-labelledby="page-title"><PageHero title="Frequently asked questions" align="center"/><FaqAccordion items={faqs}/></section><BookingCTA title="Have another question?"/></BaseLayout>

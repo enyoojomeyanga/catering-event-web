@@ -1,0 +1,36 @@
+<a href="#page-top" class="back-to-top" data-back-to-top hidden><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg><span>Back to top</span></a>
+<script>
+const floating = document.querySelector<HTMLAnchorElement>('[data-back-to-top]');
+const footerLink = document.querySelector<HTMLAnchorElement>('[data-footer-top]');
+if (floating && footerLink) {
+  const update = () => {
+    const footerVisible = footerLink.getBoundingClientRect().top < innerHeight;
+    const focused = document.activeElement === floating;
+    const active = document.activeElement;
+    const rect = active instanceof HTMLElement ? active.getBoundingClientRect() : null;
+    const otherFocus = !focused && active instanceof HTMLElement && active !== document.body && active.matches(':focus-visible') && rect !== null && rect.bottom > innerHeight - 80 && rect.top < innerHeight && rect.right > innerWidth - 180;
+    floating.hidden = !focused && (scrollY < innerHeight || footerVisible || otherFocus || !!document.querySelector('dialog[open], .mobile-nav[open], [data-connection-notice]:not([hidden])'));
+  };
+  const goTop = (event: MouseEvent) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    document.querySelector<HTMLElement>('[data-header] .brand')?.focus({preventScroll:true});
+    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  };
+  floating.addEventListener('click',goTop);
+  footerLink.addEventListener('click',goTop);
+  document.addEventListener('focusin',update);
+  document.addEventListener('focusout',()=>requestAnimationFrame(update));
+  window.addEventListener('scroll',update,{passive:true});
+  window.addEventListener('resize',update);
+  document.querySelector('.mobile-nav')?.addEventListener('toggle',update);
+  const observer = new MutationObserver(update);
+  document.querySelectorAll('dialog, [data-connection-notice]').forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['open','hidden']}));
+  update();
+}
+</script>
+<style>
+.back-to-top{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:19;display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:.65rem 1rem;border-radius:100vw;background:var(--lavender);color:var(--plum);border:1px solid var(--accent-ink);box-shadow:0 3px 12px #1f1b2e18;text-decoration:none;font-size:var(--type-link);font-weight:600}
+.back-to-top:not([hidden]){animation:top-in 300ms ease-out both}@keyframes top-in{from{transform:translateY(8px)}to{transform:none}}.back-to-top:hover{background:var(--lavender-soft)}
+@media(max-width:39.99rem){.back-to-top{padding:.65rem .8rem;font-size:.8125rem}}
+</style>

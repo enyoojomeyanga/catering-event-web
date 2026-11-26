@@ -8,6 +8,5 @@ import {services} from '../../data/services';
 const projects=await publishedProjects();
 ---
 <BaseLayout indexable={projects.length>0} title="Portfolio" description="Browse service imagery and completed projects when available.">
-<PageHero accent="Our work" title="Our Portfolio" description="Browse the collections for each of our services."/>
-<section class="section container stack-large" data-gallery><div class="center-heading">{services.some(service=>!projects.some(project=>project.data.services.includes(service.slug)))&&<p>Some collections contain illustrative imagery for inspiration, not photographs of completed client work.</p>}</div><CategoryCards/></section><BookingCTA/>
+<section class="section container stack-large" data-gallery aria-labelledby="page-title"><PageHero title="Our Portfolio" description="Browse the collections for each of our services."/>{services.some(service=>!projects.some(project=>project.data.services.includes(service.slug)))&&<p class="photo-note">Some collections contain illustrative imagery for inspiration, not photographs of completed client work.</p>}<CategoryCards/></section><BookingCTA/>
 </BaseLayout>

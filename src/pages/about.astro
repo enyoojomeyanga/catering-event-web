@@ -15,9 +15,8 @@ const approach=[
 ];
 ---
 <BaseLayout title="About" description="Learn about Flourish Catering and Events Services and how to arrange a booking.">
-  <PageHero accent="Get to know us" title="About Us"/>
-  <section class="section container split about-intro" data-reveal>
-    <div class="stack"><h2>Who we are</h2><p>{business.registeredName} provides catering, indoor and outdoor event decoration, custom cakes, small chops and confectionery.</p><p>Some occasions call for a full arrangement, while others simply need a cake or something to serve guests. You can book any of our four services individually or combine them for the same event.</p><p>We work with requests for different kinds of occasions and can discuss individual orders as well.</p></div>
+  <section class="section container split about-intro about-first" aria-labelledby="page-title" data-reveal>
+    <div class="stack"><PageHero title="About Us"/><h2>Who we are</h2><p>{business.registeredName} provides catering, indoor and outdoor event decoration, custom cakes, small chops and confectionery.</p><p>Some occasions call for a full arrangement, while others simply need a cake or something to serve guests. You can book any of our four services individually or combine them for the same event.</p><p>We work with requests for different kinds of occasions and can discuss individual orders as well.</p></div>
     <figure class="media-frame"><ResponsiveImage photo={illustrations[9].photo} kind="service"/></figure>
   </section>
   <section class="section soft-section"><div class="container stack-large"><div class="center-heading" data-reveal><h2>Our approach</h2><p>Here is how to arrange a booking with us.</p></div><div class="approach-grid">{approach.map(item=><article class="approach-card stack" data-reveal><span class="approach-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={item.path}/></svg></span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
@@ -25,4 +24,4 @@ const approach=[
   <TestimonialSection projects={projects}/>
   <BookingCTA/>
 </BaseLayout>
-<style>.about-intro{align-items:center}.approach-grid{display:grid;gap:1.5rem}.approach-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;align-content:start}.approach-icon{display:grid;place-items:center;width:44px;height:44px;color:var(--accent-ink);background:var(--lavender-soft);border-radius:50%}@media(min-width:48rem){.approach-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}</style>
+<style>.about-intro{align-items:center}.about-first{align-items:start}.approach-grid{display:grid;gap:var(--grid-gap)}.approach-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:clamp(1.25rem,2vw,1.5rem);align-content:start}.approach-icon{display:grid;place-items:center;width:44px;height:44px;color:var(--accent-ink);background:var(--lavender-soft);border-radius:50%}@media(min-width:48rem){.approach-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}</style>

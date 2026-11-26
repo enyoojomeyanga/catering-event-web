@@ -5,9 +5,23 @@
   --action-primary-bg:var(--lavender); --action-primary-text:var(--plum); --focus-light:var(--accent-ink); --focus-dark:var(--accent-ink); --focus-color:var(--focus-light);
   --font-body:'Inter Variable',Arial,sans-serif; --font-editorial:'Playfair Display Variable',Georgia,serif; --font-script:'Tangerine',cursive;
   --space-1:.25rem; --space-2:.5rem; --space-3:.75rem; --space-4:1rem; --space-6:1.5rem; --space-8:2rem; --space-10:2.5rem; --space-12:3rem; --space-16:4rem; --space-20:5rem; --space-24:6rem; --space-30:7.5rem;
-  --page-padding:1.25rem; --section-space:3.5rem; --major-space:4rem; --container-max:81rem; --reading-max:65ch; --grid-columns:4; --grid-gap:1rem;
+  --page-padding:1.25rem; --section-space:1.25rem; --major-space:2.5rem; --page-start:1.5rem; --heading-gap:.75rem; --paragraph-gap:1rem; --action-gap:1.5rem; --type-link:1rem; --type-nav:.9375rem; --type-caption:.8125rem; --container-max:81rem; --reading-max:65ch; --grid-columns:4; --grid-gap:1rem;
   --radius:.75rem; --image-radius:.75rem; --target-min:2.75rem; --motion-fast:200ms; --motion-standard:250ms;
-  --type-display:clamp(2.375rem,4.8vw,4rem); --type-h1:clamp(2.125rem,3.6vw,3rem); --type-h2:clamp(1.75rem,2.7vw,2.25rem); --type-h3:clamp(1.25rem,1.8vw,1.5rem); --type-body:1rem;
+  /* TY-05: 44/64/80 display, 38/48/56 H1, 30/36/42 H2, 24/26/30 H3.
+     Fluid interpolation starts above 430px; tablet anchor is 768px. */
+  --type-display:clamp(2.75rem,1.16rem + 5.9172vw,4rem);
+  --type-h1:clamp(2.375rem,1.58rem + 2.9586vw,3rem);
+  --type-h2:clamp(1.875rem,1.398rem + 1.7752vw,2.25rem);
+  --type-h3:clamp(1.5rem,1.341rem + .5917vw,1.625rem);
+  --type-body:clamp(1rem,.9205rem + .2959vw,1.0625rem);
 }
-@media(min-width:40rem){:root{--page-padding:2rem;--section-space:4.5rem;--major-space:5.5rem;--grid-columns:8;--grid-gap:1.5rem}}
-@media(min-width:64rem){:root{--page-padding:3rem;--section-space:6rem;--major-space:7rem;--grid-columns:12;--grid-gap:2rem;--image-radius:1rem}}
+@media(min-width:40rem){:root{--page-padding:2rem;--section-space:1.5rem;--major-space:3rem;--page-start:1.75rem;--grid-columns:8;--grid-gap:1.5rem}}
+@media(min-width:64rem){:root{--page-padding:3rem;--section-space:2rem;--major-space:4rem;--page-start:2rem;--grid-columns:12;--grid-gap:2rem;--image-radius:1rem}}
+
+@media(min-width:48rem){:root{
+  --type-display:clamp(4rem,2.5rem + 3.125vw,5rem);
+  --type-h1:clamp(3rem,2.25rem + 1.5625vw,3.5rem);
+  --type-h2:clamp(2.25rem,1.6875rem + 1.171875vw,2.625rem);
+  --type-h3:clamp(1.625rem,1.25rem + .78125vw,1.875rem);
+  --type-body:clamp(1.0625rem,.96875rem + .1953125vw,1.125rem);
+}}

@@ -1,0 +1,87 @@
+---
+import { business } from '../../data/business';
+const name = business.displayName ?? business.registeredName;
+---
+<div class="initial-loader" data-initial-loader hidden>
+  <div class="loader-card" role="status" aria-live="polite">
+    <span class="loader-symbol" aria-hidden="true">F</span>
+    <span class="loader-brand">{name}</span>
+    <span>Loading…</span>
+  </div>
+</div>
+<div class="navigation-progress" data-navigation-progress aria-hidden="true" hidden></div>
+<aside class="connection-notice" data-connection-notice hidden aria-label="Connection status">
+  <span role="status">You appear to be offline. Check your connection and try again.</span>
+  <button type="button" data-retry-page>Reload page</button>
+  <button type="button" data-dismiss-notice aria-label="Dismiss connection notice">Dismiss</button>
+</aside>
+<script is:inline>
+  // Run early, before the page body has finished parsing. The overlay is never a gate.
+  (() => {
+    const loader = document.querySelector('[data-initial-loader]');
+    if (!loader) return;
+    let showTimer, limitTimer;
+    const finish = () => {
+      clearTimeout(showTimer);
+      clearTimeout(limitTimer);
+      loader.hidden = true;
+    };
+    if (document.readyState === 'loading') {
+      showTimer = setTimeout(() => { loader.hidden = false; }, 350);
+      limitTimer = setTimeout(finish, 3500);
+      document.addEventListener('DOMContentLoaded', finish, { once: true });
+      window.addEventListener('load', finish, { once: true });
+      window.addEventListener('pageshow', finish, { once: true });
+      document.addEventListener('pointerdown', finish, { once: true, capture: true });
+      document.addEventListener('keydown', finish, { once: true, capture: true });
+      window.addEventListener('scroll', finish, { once: true, passive: true });
+    }
+  })();
+</script>
+<script>
+  const progress = document.querySelector<HTMLElement>('[data-navigation-progress]');
+  const notice = document.querySelector<HTMLElement>('[data-connection-notice]');
+  let delay: ReturnType<typeof setTimeout> | undefined;
+  let limit: ReturnType<typeof setTimeout> | undefined;
+  const stopProgress = () => {
+    clearTimeout(delay); clearTimeout(limit);
+    if (progress) progress.hidden = true;
+  };
+  document.addEventListener('click', event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const anchor = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+    if (!anchor || anchor.hasAttribute('download') || (anchor.target && anchor.target !== '_self')) return;
+    const url = new URL(anchor.href, location.href);
+    if (url.origin !== location.origin || !['http:', 'https:'].includes(url.protocol)) return;
+    if (url.pathname === location.pathname && url.search === location.search) return;
+    // A gallery image normally opens a native dialog, not a page navigation.
+    if (anchor.hasAttribute('data-lightbox-photo')) return;
+    stopProgress();
+    delay = setTimeout(() => { if (progress) progress.hidden = false; }, 180);
+    limit = setTimeout(stopProgress, 8000);
+  });
+  window.addEventListener('pagehide', stopProgress);
+  window.addEventListener('pageshow', stopProgress);
+  const updateConnection = () => {
+    if (notice) notice.hidden = navigator.onLine;
+    if (!navigator.onLine) stopProgress();
+  };
+  window.addEventListener('online', updateConnection);
+  window.addEventListener('offline', updateConnection);
+  notice?.querySelector('[data-retry-page]')?.addEventListener('click', () => location.reload());
+  notice?.querySelector('[data-dismiss-notice]')?.addEventListener('click', () => { if (notice) notice.hidden = true; });
+  updateConnection();
+</script>
+<style>
+.initial-loader{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:1.25rem;background:var(--lavender-soft);color:var(--plum);pointer-events:none}
+.loader-card{display:grid;justify-items:center;gap:1rem;text-align:center;max-width:26rem;color:var(--muted);font-size:.875rem}
+.loader-brand{font:600 1.4rem/1.3 var(--font-editorial);color:var(--plum)}
+.loader-symbol{position:relative;display:grid;place-items:center;width:4.5rem;height:4.5rem;font:600 2rem/1 var(--font-editorial);color:var(--plum)}
+.loader-symbol::before{content:'';position:absolute;inset:0;border:3px solid var(--border);border-top-color:var(--accent-ink);border-radius:50%;animation:loader-spin 850ms linear infinite}
+.navigation-progress{position:fixed;inset:0 0 auto;z-index:99;height:3px;background:var(--border);overflow:hidden;pointer-events:none}
+.navigation-progress::before{content:'';display:block;height:100%;width:35%;background:var(--accent-ink);animation:nav-progress 1100ms ease-in-out infinite}
+.connection-notice{position:fixed;z-index:30;bottom:max(1rem,env(safe-area-inset-bottom));left:max(1rem,env(safe-area-inset-left));right:max(1rem,env(safe-area-inset-right));max-width:34rem;display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;padding:1rem;background:var(--lavender-soft);border:1px solid var(--accent-ink);border-radius:var(--radius);color:var(--plum);font-size:.875rem;box-shadow:0 4px 20px #1f1b2e18}
+.connection-notice span{flex:1 1 100%}.connection-notice button{min-height:44px;border:1px solid var(--accent-ink);background:var(--white);color:var(--plum);border-radius:100vw;padding:.5rem .9rem}.connection-notice button:hover{background:var(--lavender)}
+@keyframes loader-spin{to{transform:rotate(360deg)}}@keyframes nav-progress{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+@media(prefers-reduced-motion:reduce){.loader-symbol::before,.navigation-progress::before{animation:none!important}}
+</style>

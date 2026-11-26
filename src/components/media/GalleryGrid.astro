@@ -7,28 +7,100 @@ const { items } = Astro.props;
 const images = await Promise.all(items.map(async item => ({ ...item, large: await getImage({src:item.photo.src,width:Math.min(item.photo.src.width,1920),format:'webp',quality:85}) })));
 ---
 <div class="photo-grid" data-photo-grid>{images.map(({photo,categories,large})=><figure data-filter-item data-categories={categories.join(' ')}><a href={large.src} data-lightbox-photo data-alt={photo.alt} data-caption={photo.caption ?? ''} aria-label={`View larger image: ${photo.alt}`}><ResponsiveImage photo={photo}/></a>{photo.caption && <figcaption>{photo.caption}</figcaption>}</figure>)}</div>
-<dialog data-lightbox aria-label="Image viewer"><div class="viewer"><div class="viewer-controls"><button type="button" data-prev aria-label="Previous image">Previous</button><p data-position aria-live="polite"></p><button type="button" data-next aria-label="Next image">Next</button><button type="button" data-close aria-label="Close image viewer">Close ×</button></div><img data-full alt="" hidden/><p data-caption-text></p><p data-image-error role="status" hidden>Image could not be loaded. Try another photograph or close the viewer.</p></div></dialog>
+<dialog data-lightbox aria-label="Image viewer"><div class="viewer"><div class="viewer-controls"><button type="button" data-prev aria-label="Previous image">Previous</button><p data-position aria-live="polite"></p><button type="button" data-next aria-label="Next image">Next</button><button type="button" data-close aria-label="Close image viewer">Close ×</button></div><p data-image-loading role="status" hidden>Loading photograph…</p><img data-full alt="" hidden/><p data-caption-text></p><p data-image-error role="status" hidden>Image could not be loaded. Try another photograph or close the viewer.</p></div></dialog>
 <script>
  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
- if (dialog) {
-   const image = dialog.querySelector<HTMLImageElement>('[data-full]')!;
-   const caption = dialog.querySelector<HTMLElement>('[data-caption-text]')!;
-   const position = dialog.querySelector<HTMLElement>('[data-position]')!;
-   const prev = dialog.querySelector<HTMLButtonElement>('[data-prev]')!;
-   const next = dialog.querySelector<HTMLButtonElement>('[data-next]')!;
-   const close = dialog.querySelector<HTMLButtonElement>('[data-close]')!;
-   const error = dialog.querySelector<HTMLElement>('[data-image-error]')!;
-   image.addEventListener('error',()=>{ if(dialog.open) error.hidden=false; });
-   image.addEventListener('load',()=>{error.hidden=true;});
+ if (dialog) initLightbox(dialog);
+
+ function initLightbox(dialog: HTMLDialogElement) {
+   const image = dialog.querySelector<HTMLImageElement>('[data-full]');
+   const caption = dialog.querySelector<HTMLElement>('[data-caption-text]');
+   const position = dialog.querySelector<HTMLElement>('[data-position]');
+   const prev = dialog.querySelector<HTMLButtonElement>('[data-prev]');
+   const next = dialog.querySelector<HTMLButtonElement>('[data-next]');
+   const close = dialog.querySelector<HTMLButtonElement>('[data-close]');
+   const error = dialog.querySelector<HTMLElement>('[data-image-error]');
+   const loading = dialog.querySelector<HTMLElement>('[data-image-loading]');
+   if (!image || !caption || !position || !prev || !next || !close || !error || !loading) return;
+   let timer: ReturnType<typeof setTimeout> | undefined;
+   let request: AbortController | undefined;
    let links: HTMLAnchorElement[] = [], index = 0, trigger: HTMLAnchorElement | null = null;
-   function show(i: number) { index = (i+links.length)%links.length; const link=links[index]; error.hidden=true; image.hidden=false; image.src=link.href; image.alt=link.dataset.alt ?? ''; caption.textContent=link.dataset.caption ?? ''; position.textContent=`${index+1} of ${links.length}`; prev.disabled=next.disabled=links.length<2; }
-   document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-photo]').forEach(link=>link.addEventListener('click',event=>{ if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||typeof dialog.showModal!=='function') return; event.preventDefault(); links=Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-photo]')).filter(a=>!a.closest('[hidden]')); trigger=link; show(links.indexOf(link)); dialog.showModal(); close.focus(); }));
-   prev.addEventListener('click',()=>show(index-1)); next.addEventListener('click',()=>show(index+1)); close.addEventListener('click',()=>dialog.close());
-   dialog.addEventListener('keydown',event=>{ if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();show(index+(event.key==='ArrowLeft'?-1:1));} });
-   dialog.addEventListener('close',()=>{image.hidden=true;image.removeAttribute('src');trigger?.focus();});
+   const clearPending = () => {
+     clearTimeout(timer);
+     request?.abort();
+     request = undefined;
+     loading.hidden = true;
+   };
+   const fail = () => { clearPending(); image.hidden = true; error.hidden = false; };
+   const show = (i: number) => {
+     if (!links.length) return;
+     index = (i + links.length) % links.length;
+     const link = links[index];
+     clearPending();
+     error.hidden = true;
+     image.hidden = true;
+     loading.hidden = false;
+     image.alt = link.dataset.alt ?? '';
+     caption.textContent = link.dataset.caption ?? '';
+     position.textContent = `${index + 1} of ${links.length}`;
+     prev.disabled = next.disabled = links.length < 2;
+     const pending = new AbortController();
+     request = pending;
+     const ready = () => {
+       if (pending.signal.aborted || !dialog.open) return;
+       clearPending();
+       error.hidden = true;
+       image.hidden = false;
+     };
+     const failed = () => {
+       if (pending.signal.aborted || !dialog.open) return;
+       fail();
+       image.removeAttribute('src');
+     };
+     image.addEventListener('load', ready, { signal: pending.signal });
+     image.addEventListener('error', failed, { signal: pending.signal });
+     image.src = link.href;
+     timer = setTimeout(failed, 15000);
+     if (image.complete) {
+       if (image.naturalWidth > 0) ready();
+       else failed();
+     }
+   };
+   document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-photo]').forEach(link => link.addEventListener('click', event => {
+     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || typeof dialog.showModal !== 'function') return;
+     const visible = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-photo]')).filter(a => !a.closest('[hidden]'));
+     const selected = visible.indexOf(link);
+     if (selected < 0) return;
+     event.preventDefault();
+     links = visible;
+     trigger = link;
+     dialog.showModal();
+     show(selected);
+     close.focus();
+   }));
+   prev.addEventListener('click', () => show(index - 1));
+   next.addEventListener('click', () => show(index + 1));
+   close.addEventListener('click', () => dialog.close());
+   dialog.addEventListener('keydown', event => {
+     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+       event.preventDefault();
+       show(index + (event.key === 'ArrowLeft' ? -1 : 1));
+     }
+   });
+   dialog.addEventListener('close', () => {
+     clearPending();
+     error.hidden = true;
+     image.hidden = true;
+     image.removeAttribute('src');
+     trigger?.focus();
+   });
  }
 </script>
 <style>
-.photo-grid a{display:block;overflow:hidden;border-radius:var(--image-radius)} .photo-grid a :global(img){transition:transform 400ms ease} .photo-grid a:hover :global(img){transform:scale(1.035)} .photo-grid { display:grid; gap:1.5rem; } figure { margin:0; } figure[hidden] { display:none; } figcaption { padding-block:.5rem; font-size:.875rem; } @media(min-width:40rem){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));}} @media(min-width:64rem){.photo-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+.photo-grid a{display:block;overflow:hidden;border-radius:var(--image-radius)} .photo-grid a :global(img){transition:transform 450ms ease} @media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.photo-grid a:hover :global(img){transform:scale(1.035)}} .photo-grid { display:grid; gap:var(--grid-gap); } figure { margin:0; } figure[hidden] { display:none; } figcaption { padding-block:.5rem; font-size:var(--type-caption); } @media(min-width:40rem){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));}} @media(min-width:64rem){.photo-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 dialog { border-radius:var(--radius); position:fixed; inset:0; margin:auto; border:1px solid var(--border-decorative); padding:1rem; width:min(92vw,80rem); max-height:92dvh; overflow:auto; background:var(--surface-page); color:var(--text-primary); } dialog::backdrop { background:rgb(0 0 0 / .8); } .viewer { display:grid; gap:.75rem; } .viewer-controls { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; } .viewer-controls p { flex:1; } button { border-radius:100vw; min-height:44px; min-width:44px; border:1px solid var(--border-interactive); background:var(--surface-page); color:inherit; padding:.5rem; cursor:pointer; font:inherit; } button:disabled{opacity:.5;cursor:default;} .viewer img[hidden] { display:none; } .viewer img { width:100%; max-height:65dvh; object-fit:contain; }
+</style>
+
+<style>
+@media(max-width:39.99rem){dialog{padding:.75rem;max-height:calc(100dvh - 1.5rem);width:calc(100vw - 1.5rem)}.viewer-controls{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:.5rem}.viewer-controls [data-close]{grid-column:1/-1}.viewer-controls p{text-align:center;font-size:var(--type-caption)}.viewer-controls button{font-size:var(--type-link);padding:.5rem .35rem}.viewer img{max-height:55dvh}}
 </style>

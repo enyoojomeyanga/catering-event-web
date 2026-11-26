@@ -5,4 +5,5 @@ interface Props {message?:string;title?:string;}
 const {message,title='Let’s discuss your occasion'}=Astro.props;
 ---
 <section class="section booking-section"><div class="container center-heading" data-reveal><h2>{title}</h2><p>Share your plans with us to discuss availability and a quote.</p><Button href={whatsappLink(message)}>Book on WhatsApp</Button></div></section>
-<style>.booking-section{position:relative;background:var(--white);padding-block:var(--major-space);overflow:hidden}.booking-section::before,.booking-section::after{content:'✧';position:absolute;color:var(--lavender);font-size:2rem;pointer-events:none}.booking-section::before{left:6%;top:12%}.booking-section::after{right:6%;bottom:12%;color:var(--green-soft)}</style>
+<style>.booking-section{position:relative;background:var(--white);padding-block:var(--section-space);overflow:hidden}.booking-section::before,.booking-section::after{content:'✧';position:absolute;color:var(--lavender);font-size:1.5rem;pointer-events:none}.booking-section::before{left:3%;top:8%}.booking-section::after{right:3%;bottom:8%;color:var(--green-soft)}</style>
+
