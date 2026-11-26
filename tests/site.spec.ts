@@ -45,8 +45,7 @@ test('mobile navigation and FAQ', async ({ page }) => {
   const menu = page.locator('.mobile-nav');
   await menu.locator(':scope > summary').click();
   await expect(menu).toHaveAttribute('open', '');
-  await menu.locator('nav details summary').click();
-  await expect(menu.locator('nav details')).toHaveAttribute('open', '');
+  await expect(menu.locator('nav details')).toHaveCount(0);
   await expect(menu.getByRole('link', { name: 'Catering', exact: true })).toBeVisible();
   await menu.getByRole('link', { name: 'Catering', exact: true }).click();
   await expect(page).toHaveURL(/\/services\/catering\/?$/);
@@ -72,12 +71,12 @@ test('WhatsApp destination', async ({ page }) => {
 });
 test('native mobile menu without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
-  try { const page = await context.newPage(); await page.goto('http://127.0.0.1:4322/'); await page.locator('.mobile-nav > summary').click(); await expect(page.locator('.mobile-nav')).toHaveAttribute('open', ''); await page.locator('.mobile-nav nav details summary').click(); await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Catering', exact: true })).toBeVisible(); } finally { await context.close(); }
+  try { const page = await context.newPage(); await page.goto('http://127.0.0.1:4322/'); await page.locator('.mobile-nav > summary').click(); await expect(page.locator('.mobile-nav')).toHaveAttribute('open', ''); await expect(page.locator('.mobile-nav nav details')).toHaveCount(0); await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Catering', exact: true })).toBeVisible(); } finally { await context.close(); }
 });
-test('portfolio empty state or populated lightbox', async ({ page }) => {
+test('illustrative or populated gallery lightbox', async ({ page }) => {
   await page.goto('/gallery');
   const photos = page.locator('[data-lightbox-photo]');
-  if (await photos.count() === 0) { await expect(page.getByText('Our portfolio is not yet available online.', { exact: false })).toBeVisible(); await expect(page.locator('header a[href="/gallery"]')).toHaveCount(0); return; }
+  expect(await photos.count()).toBeGreaterThan(0);
   const first = photos.first(); await first.click();
   await expect(page.locator('dialog[data-lightbox]')).toBeVisible();
   await page.keyboard.press('Escape'); await expect(page.locator('dialog[data-lightbox]')).not.toBeVisible(); await expect(first).toBeFocused();

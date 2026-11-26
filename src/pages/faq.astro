@@ -1,12 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Breadcrumbs from '../components/shared/Breadcrumbs.astro';
 import FaqAccordion from '../components/shared/FaqAccordion.astro';
 import BookingCTA from '../components/shared/BookingCTA.astro';
 import { faqs } from '../data/faqs';
 ---
-<BaseLayout title="FAQs | Catering & Events" description="Answers to common questions about bookings, quotations, service coverage and independent orders.">
- <Breadcrumbs items={[{label:'Home',href:'/'},{label:'FAQs'}]}/>
- <section class="section container stack-large"><div class="stack"><p class="eyebrow">Before booking</p><h1>Frequently asked <span class="editorial">questions.</span></h1><p class="lead">Helpful information before making your booking.</p></div><FaqAccordion items={faqs}/></section>
+<BaseLayout title="FAQs | Catering & Events" description="Answers to common questions about bookings, quotations, independent orders.">
+ <section class="section container stack-large"><div class="stack"><h1>FAQs</h1></div><FaqAccordion items={faqs}/></section>
  <BookingCTA title="Have another question?" />
 </BaseLayout>

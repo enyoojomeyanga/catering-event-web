@@ -1,4 +1,4 @@
-# Launch acceptance checklist — v0.5.0
+# Launch acceptance checklist — v0.6.0
 
 Do not deploy or enable indexing without separate approval. The build defaults to noindex; this is not access control. Private materials must never be placed in a public repository or public deployment.
 
@@ -18,7 +18,7 @@ Run `npm run preview` then Chrome DevTools Lighthouse on localhost:4321 (mobile 
 Verify actual client permission, project titles, service categorization, captions and alt text. Use two different service categories to exercise filters; check project routes, hero cropping, responsive source sets, all images load, modal previous/next, Escape, focus return, keyboard trap, error recovery, no-JS image links and testimonials. Confirm private and setup records never appear in generated HTML or sitemap. Do not ship fake test records. Re-run accessibility and performance checks with real photos.
 
 ## Production authorization gate
-- Confirm business display name (set `displayName` in `src/data/business.ts` only after approval), legal name, logo, production HTTPS origin, content permissions and hosting plan appropriate for commercial use.
+- The display name is approved as Flourish Catering and Events Services. Confirm logo, production HTTPS origin, content permissions and commercial hosting plan. Replace illustrative assets with genuine approved work before launch, or obtain explicit approval for retaining conspicuously labelled illustrations.
 - Use `.env.example` as reference. With explicit deployment/indexing approval, configure `PUBLIC_SITE_URL` as confirmed HTTPS origin and `PUBLIC_ENABLE_INDEXING=true` in production build only. Preview builds must leave indexing disabled. Never commit private environment data. Invalid origin or missing approved display name blocks an indexing-enabled build.
 - `npm run build` with production settings. Check output HTML canonical links and Open Graph metadata; homepage LocalBusiness JSON-LD, sitemap contains only indexable pages; 404 and empty gallery noindex and absent from sitemap. Test final domain redirects, HTTPS, 404 status, robots.txt, sitemap and social previews. Social image requires real approved asset; not included yet.
 - Deploy only after separate approval. No GitHub push or deployment performed. Submit sitemap in Search Console after launch; monitor actual field vitals and indexing.

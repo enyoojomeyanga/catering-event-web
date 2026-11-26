@@ -1,25 +1,25 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumbs from '../../components/shared/Breadcrumbs.astro';
+import { illustrations } from '../../data/illustrations';
 import BookingCTA from '../../components/shared/BookingCTA.astro';
 import ProjectGrid from '../../components/portfolio/ProjectGrid.astro';
 import GalleryGrid from '../../components/media/GalleryGrid.astro';
 import { publishedProjects, projectPhotos } from '../../lib/portfolio';
 import { services } from '../../data/services';
 const projects = await publishedProjects();
-const categories = services.filter(s=>projects.some(p=>p.data.services.includes(s.slug)));
-const photos = projects.flatMap(p=>projectPhotos(p).map(photo=>({photo,categories:p.data.services})));
+const categories = projects.length ? services.filter(s=>projects.some(p=>p.data.services.includes(s.slug))) : services;
+const photos = projects.length ? projects.flatMap(p=>projectPhotos(p).map(photo=>({photo,categories:p.data.services}))) : illustrations;
 ---
-<BaseLayout indexable={projects.length > 0} title="Gallery | Catering & Events" description="Explore completed projects and photographs from our four specialties.">
-<Breadcrumbs items={[{label:'Home',href:'/'},{label:'Gallery'}]}/>
-<section class="section container stack-large"><div class="stack"><p class="eyebrow">Our portfolio</p><h1>Work worth sharing.</h1><span class="accent-rule" aria-hidden="true"></span><p class="lead">Explore our completed work across our four specialties.</p></div>
-{projects.length===0 ? <p>Our portfolio is not yet available online. Contact the team to discuss your occasion.</p> : <div class="stack-large" data-gallery>{categories.length>1 && <div data-filters hidden><p id="filter-label">Filter by service</p><div class="filters" role="group" aria-labelledby="filter-label"><button type="button" data-filter="all" aria-pressed="true">All</button>{categories.map(s=><button type="button" data-filter={s.slug} aria-pressed="false">{s.title}</button>)}</div><p role="status" data-filter-status></p></div>}<section class="stack"><h2>Completed projects.</h2><ProjectGrid projects={projects}/></section><section class="stack"><h2>Photography.</h2><GalleryGrid items={photos}/></section></div>}
+<BaseLayout indexable={projects.length > 0} title="Gallery | Catering & Events" description="Browse service imagery and completed projects when available.">
+
+<section class="section container stack-large"><div class="stack"><h1>Gallery</h1>{!projects.length && <p class="lead">AI-generated illustrations for inspiration. These are not photographs of completed client work.</p>}</div>
+<div class="stack-large" data-gallery>{categories.length>1 && <div data-filters hidden><p id="filter-label">Filter by service</p><div class="filters" role="group" aria-labelledby="filter-label"><button type="button" data-filter="all" aria-pressed="true">All</button>{categories.map(s=><button type="button" data-filter={s.slug} aria-pressed="false">{s.title}</button>)}</div><p role="status" data-filter-status></p></div>}{projects.length>0&&<section class="stack"><h2>Completed projects</h2><ProjectGrid projects={projects}/></section>}<section class="stack"><h2>Photographs</h2><GalleryGrid items={photos}/></section></div>
 </section><BookingCTA />
 </BaseLayout>
 <script>
  const gallery=document.querySelector<HTMLElement>('[data-gallery]');
  const controls=gallery?.querySelector<HTMLElement>('[data-filters]');
- if(gallery&&controls){const buttons=Array.from(controls.querySelectorAll<HTMLButtonElement>('[data-filter]'));const items=Array.from(gallery.querySelectorAll<HTMLElement>('[data-filter-item]'));const status=controls.querySelector<HTMLElement>('[data-filter-status]');controls.hidden=false;buttons.forEach(button=>button.addEventListener('click',()=>{const category=button.dataset.filter;buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));items.forEach(item=>{item.hidden=category!=='all'&&!(item.dataset.categories??'').split(' ').includes(category??'');});if(status)status.textContent=`Showing ${items.filter(i=>!i.hidden&&i.classList.contains('project-card')).length} projects.`;}));}
+ if(gallery&&controls){const buttons=Array.from(controls.querySelectorAll<HTMLButtonElement>('[data-filter]'));const items=Array.from(gallery.querySelectorAll<HTMLElement>('[data-filter-item]'));const status=controls.querySelector<HTMLElement>('[data-filter-status]');controls.hidden=false;buttons.forEach(button=>button.addEventListener('click',()=>{const category=button.dataset.filter;buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));items.forEach(item=>{item.hidden=category!=='all'&&!(item.dataset.categories??'').split(' ').includes(category??'');});if(status)status.textContent=`Showing ${items.filter(i=>!i.hidden).length} items.`;}));}
 </script>
 <style>
 .filters { display:flex; flex-wrap:wrap; gap:.75rem; margin-block:.75rem; } button { font:inherit; min-height:44px; padding:.5rem 1rem; border:1px solid var(--border-interactive); background:var(--surface-page); color:var(--text-primary); cursor:pointer; } button[aria-pressed=true]{background:var(--surface-inverse);color:var(--text-inverse);}

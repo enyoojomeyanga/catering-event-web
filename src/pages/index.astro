@@ -8,19 +8,18 @@ import FaqAccordion from '../components/shared/FaqAccordion.astro';
 import BookingCTA from '../components/shared/BookingCTA.astro';
 import Button from '../components/ui/Button.astro';
 import { faqs } from '../data/faqs';
-import { business } from '../data/business';
-import { publishedProjects } from "../lib/portfolio";
-import ProjectSection from "../components/portfolio/ProjectSection.astro";
-import TestimonialSection from "../components/portfolio/TestimonialSection.astro";
-const projects = await publishedProjects();
+import { publishedProjects } from '../lib/portfolio';
+import ProjectSection from '../components/portfolio/ProjectSection.astro';
+import TestimonialSection from '../components/portfolio/TestimonialSection.astro';
+const projects=await publishedProjects();
 ---
-<BaseLayout title="Catering & Events" description="Catering, event decoration, custom cakes and confectionery in Kogi State, Abuja and across Nigeria.">
- <HomeHero />
- <section class="section container stack-large"><SectionHeading eyebrow="01 / What we do" title="Our four specialties." description="Book individually or bring multiple services together for your occasion."/><ServiceGrid /></section>
- <ProjectSection projects={projects.filter(p=>p.data.featured)}/>
- <section class="section inverse"><div class="container split"><div class="stack"><p class="eyebrow">Our commitment</p><h2>{business.motto}.</h2><span class="accent-rule" aria-hidden="true"></span></div><div class="stack"><p class="lead">One team bringing food, creativity and celebration together.</p><p>Explore our services and discuss an arrangement tailored to your needs.</p><div><Button href="/about" variant="inverse">Discover our story</Button></div></div></div></section>
- <TestimonialSection projects={projects}/>
- <section class="section container stack-large"><SectionHeading eyebrow="02 / Getting started" title="How to book."/><BookingSteps /></section>
- <section class="section container ruled stack-large"><SectionHeading eyebrow="03 / Good to know" title="Frequently asked questions."/><FaqAccordion items={[faqs[0],faqs[2],faqs[3]]}/><div><Button href="/faq" variant="text">View all questions ↗</Button></div></section>
- <BookingCTA />
+<BaseLayout title="Catering & Events" description="Catering, event decoration, custom cakes and small chops for your occasion.">
+<HomeHero />
+<section class="section container stack-large"><SectionHeading title="Our services" description="Choose one service or arrange several for the same event."/><ServiceGrid/></section>
+<ProjectSection projects={projects.filter(p=>p.data.featured)}/>
+<section class="section container ruled split"><h2>About us</h2><div class="stack"><p>We help customers plan the food, decoration and treats for their events. You can also order cakes or small chops separately.</p><div><Button href="/about" variant="text">About the business</Button></div></div></section>
+<TestimonialSection projects={projects}/>
+<section class="section container stack-large"><h2>How to book</h2><BookingSteps/></section>
+<section class="section container ruled stack-large"><h2>FAQs</h2><FaqAccordion items={faqs.slice(0,3)}/><div><Button href="/faq" variant="text">View all FAQs</Button></div></section>
+<BookingCTA/>
 </BaseLayout>

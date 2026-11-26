@@ -7,9 +7,9 @@
 .skip-link { position: fixed; inset: 0 auto auto 1rem; padding: .75rem; background: var(--surface-page); color: var(--text-primary); transform: translateY(-150%); z-index: 100; }
 .skip-link:focus { transform: none; }
 .stack { display:grid; gap:1rem; align-content:start; }
-.stack-large { display:grid; gap:clamp(1.75rem,4vw,3rem); align-content:start; }
-.section-heading { display:grid; gap:.75rem; max-width:70ch; }
-.split { display:grid; gap:clamp(1.5rem,5vw,5rem); align-items:start; }
+.stack-large { display:grid; gap:clamp(1.5rem,3vw,2.5rem); align-content:start; }
+.section-heading { display:grid; gap:1rem; max-width:65ch; }
+.split { display:grid; gap:clamp(1.5rem,4vw,3rem); align-items:start; }
 @media(min-width:48rem){ .split { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 .action-row { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; }
 .lead { font-size:clamp(1.125rem,1rem + .35vw,1.25rem); }
@@ -19,3 +19,5 @@
 .editorial-panel { border-top:1px solid var(--border-interactive); padding-block:1.5rem; }
 .offerings { padding:0; margin:0; list-style:none; }
 .offerings li { padding-block:.85rem; border-bottom:1px solid var(--border-decorative); }
+
+@media(min-width:64rem){.stack,.section-heading{gap:1.25rem}}

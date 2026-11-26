@@ -25,7 +25,7 @@ export function businessSchema() {
     '@context': 'https://schema.org', '@type': 'LocalBusiness',
     name: business.displayName, legalName: business.registeredName,
     url: canonicalUrl('/'), telephone: '+234' + business.phones[0].slice(1),
-    email: business.email, slogan: business.motto,
+    email: business.email,
     address: { '@type': 'PostalAddress', streetAddress: business.offices[0].address, addressLocality: 'Idah', addressRegion: 'Kogi', addressCountry: 'NG' },
     areaServed: { '@type': 'Country', name: 'Nigeria' },
   };

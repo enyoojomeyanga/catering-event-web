@@ -3,6 +3,6 @@ import ProjectGrid from './ProjectGrid.astro';
 import Button from '../ui/Button.astro';
 import type { Project } from '../../lib/portfolio';
 interface Props { projects: Project[]; title?: string; }
-const { projects, title='Selected work.' } = Astro.props;
+const { projects, title='Our work' } = Astro.props;
 ---
-{projects.length > 0 && <section class="section container ruled stack-large"><div class="stack"><p class="eyebrow">Our portfolio</p><h2>{title}</h2></div><ProjectGrid projects={projects.slice(0,4)}/><div><Button href="/gallery" variant="text">Explore our gallery ↗</Button></div></section>}
+{projects.length > 0 && <section class="section container ruled stack-large"><div class="stack"><h2>{title}</h2></div><ProjectGrid projects={projects.slice(0,4)}/><div><Button href="/gallery" variant="text">View gallery</Button></div></section>}

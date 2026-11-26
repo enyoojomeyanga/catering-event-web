@@ -1,11 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumbs from '../../components/shared/Breadcrumbs.astro';
 import ServiceGrid from '../../components/services/ServiceGrid.astro';
 import BookingCTA from '../../components/shared/BookingCTA.astro';
 ---
-<BaseLayout title="Our specialties | Catering & Events" description="Explore catering, event decoration, baking and small chops services, available individually or together.">
- <Breadcrumbs items={[{label:'Home',href:'/'},{label:'Services'}]}/>
- <section class="section container stack-large"><div class="stack"><p class="eyebrow">What we do</p><h1>Our four <span class="editorial">specialties.</span></h1><p class="lead">Four complementary services, available individually or together.</p><span class="accent-rule" aria-hidden="true"></span></div><ServiceGrid /></section>
+<BaseLayout title="Services" description="Explore catering, event decoration, baking and small chops services, available individually or together.">
+ <section class="section container stack-large"><div class="stack"><h1>Our services</h1><p class="lead">Choose the services you need for your occasion.</p></div><ServiceGrid /></section>
  <BookingCTA title="Need multiple services?" message="Hello, I would like to enquire about combining services for my occasion." />
 </BaseLayout>

@@ -3,11 +3,10 @@ import { expect, test, type Page } from '@playwright/test';
 const routes = [
   ['Home', '/'], ['All services', '/services'], ['Catering', '/services/catering'],
   ['Event decoration', '/services/decoration'], ['Baking & cakes', '/services/baking'],
-  ['Small chops & confectionery', '/services/confectionery'], ['About', '/about'], ['Contact', '/contact'],
+  ['Small chops & confectionery', '/services/confectionery'], ['About', '/about'], ['Contact', '/contact'], ['Gallery', '/gallery'],
 ] as const;
 
 const mobileMenu = (page: Page) => page.locator('.mobile-nav');
-const nestedMenu = (page: Page) => mobileMenu(page).locator('nav details');
 
 for (const [label, route] of routes) {
   test(`touch navigation: ${label}`, async ({ browser }) => {
@@ -21,10 +20,7 @@ for (const [label, route] of routes) {
       const menu = mobileMenu(page);
       await menu.locator(':scope > summary').tap();
       await expect(menu).toHaveAttribute('open', '');
-      if (route.startsWith('/services')) {
-        await nestedMenu(page).locator('summary').tap();
-        await expect(nestedMenu(page)).toHaveAttribute('open', '');
-      }
+      await expect(menu.locator('nav details')).toHaveCount(0);
       const link = menu.getByRole('link', { name: label, exact: true });
       await expect(link).toBeVisible();
       await link.tap();
@@ -34,33 +30,83 @@ for (const [label, route] of routes) {
   });
 }
 
-test('nested escape, outside dismissal and reopening', async ({ page }) => {
+test('flat mobile menu: escape, outside dismissal and resize', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/');
   const menu = mobileMenu(page);
   const summary = menu.locator(':scope > summary');
-  const nested = nestedMenu(page);
-  const nestedSummary = nested.locator('summary');
-  await summary.click(); await nestedSummary.click();
-  await expect(nested).toHaveAttribute('open', '');
-  await nestedSummary.focus(); await page.keyboard.press('Escape');
-  await expect(nested).not.toHaveAttribute('open', '');
-  await expect(menu).toHaveAttribute('open', '');
-  await expect(nestedSummary).toBeFocused();
+  await summary.click();
+  await expect(menu.locator('nav details')).toHaveCount(0);
+  await menu.getByRole('link', { name: 'Catering', exact: true }).focus();
   await page.keyboard.press('Escape');
   await expect(menu).not.toHaveAttribute('open', '');
   await expect(summary).toBeFocused();
-  await summary.click(); await nestedSummary.click();
-  // Brand is outside both disclosures; click a non-navigating surface instead.
+  await summary.click();
   await page.locator('.header-row').click({ position: { x: 2, y: 2 } });
   await expect(menu).not.toHaveAttribute('open', '');
   await summary.click();
-  await expect(nested).not.toHaveAttribute('open', '');
-  await expect(menu.getByRole('link', { name: 'Home', exact: true })).toBeVisible();
+  await expect(menu.getByRole('link', { name: 'Catering', exact: true })).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(menu).not.toHaveAttribute('open', '');
   await expect(page.locator('.desktop-nav')).toBeVisible();
 });
+
+for (const [label, route] of routes.filter(([, route]) => route.startsWith('/services'))) {
+  test(`desktop dropdown navigation: ${label}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const menu = page.locator('.services-menu');
+    const header = page.locator('[data-header]');
+    const initial = await header.boundingBox();
+    await menu.locator('summary').click();
+    await expect(menu).toHaveAttribute('open', '');
+    expect((await header.boundingBox())?.height).toBe(initial?.height);
+    const link = menu.getByRole('link', { name: label, exact: true });
+    await expect(link).toBeVisible();
+    await link.click();
+    await expect(page).toHaveURL(url => url.pathname.replace(/\/$/, '') === route);
+    await expect(menu.locator('summary')).toHaveClass(/section-active/);
+    await menu.locator('summary').click();
+    await expect(menu.getByRole('link', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
+  });
+}
+
+test('desktop dropdown outside dismissal and keyboard tab', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const menu = page.locator('.services-menu');
+  const summary = menu.locator('summary');
+  await summary.click();
+  await page.locator('.header-row').click({ position: { x: 2, y: 2 } });
+  await expect(menu).not.toHaveAttribute('open', '');
+  await summary.focus();
+  await page.keyboard.press('Enter');
+  await expect(menu).toHaveAttribute('open', '');
+  await page.keyboard.press('Tab');
+  await expect(menu.getByRole('link', { name: 'Catering', exact: true })).toBeFocused();
+  await menu.getByRole('link', { name: 'All services', exact: true }).focus();
+  await page.keyboard.press('Tab');
+  await expect(menu).not.toHaveAttribute('open', '');
+  await expect(page.locator('.desktop-nav').getByRole('link', { name: 'Gallery' })).toBeFocused();
+});
+
+for (const width of [320, 375]) {
+  test(`flat mobile panel stays within viewport at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 568 });
+    await page.goto('/');
+    const header = page.locator('[data-header]');
+    const initial = await header.boundingBox();
+    await mobileMenu(page).locator('summary').click();
+    const panel = await page.locator('.mobile-panel').boundingBox();
+    expect(panel).not.toBeNull();
+    expect(panel!.x).toBeGreaterThanOrEqual(0);
+    expect(panel!.x + panel!.width).toBeLessThanOrEqual(width + 1);
+    expect(panel!.y + panel!.height).toBeLessThanOrEqual(569);
+    expect((await header.boundingBox())?.height).toBe(initial?.height);
+    await mobileMenu(page).getByRole('link', { name: 'Contact', exact: true }).click();
+    await expect(page).toHaveURL(/\/contact\/?$/);
+  });
+}
 
 for (const width of [320, 375, 1440]) {
   test(`sticky header stable at ${width}px`, async ({ page }) => {

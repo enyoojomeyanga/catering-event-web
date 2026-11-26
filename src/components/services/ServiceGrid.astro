@@ -1,16 +1,11 @@
 ---
 import { services, type Service } from '../../data/services';
+import { publishedProjects } from '../../lib/portfolio';
+import { serviceIllustrations } from '../../data/illustrations';
+import ResponsiveImage from '../media/ResponsiveImage.astro';
 interface Props { items?: readonly Service[]; }
 const { items = services } = Astro.props;
-import { publishedProjects } from "../../lib/portfolio";
-import ResponsiveImage from "../media/ResponsiveImage.astro";
 const projects = await publishedProjects();
 ---
-<div class="service-grid">{items.map(service => <article class="service-card">{projects.find(p=>p.data.services.includes(service.slug))?.data.cover && <ResponsiveImage photo={projects.find(p=>p.data.services.includes(service.slug))!.data.cover!} kind="service"/>}<p class="eyebrow">0{services.indexOf(service)+1} / Specialties</p><h3><a href={`/services/${service.slug}`}>{service.title}</a></h3><p>{service.description}</p><span class="service-arrow" aria-hidden="true">↗</span></article>)}</div>
-<style>
-.service-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--border-decorative); border-left:1px solid var(--border-decorative); }
-.service-card { position:relative; display:grid; align-content:start; gap:.85rem; padding:clamp(1.25rem,4vw,3rem); min-height:clamp(13rem,23vw,19rem); border-right:1px solid var(--border-decorative); border-bottom:1px solid var(--border-decorative); }
-.service-card:nth-child(4n+1),.service-card:nth-child(4n+4) { background:var(--surface-inverse); color:var(--text-inverse); --focus-color:var(--focus-dark); }
-.service-card h3 a { text-decoration:none; } .service-card h3 a::after { content:''; position:absolute; inset:0; } .service-card:focus-within { outline:2px solid var(--focus-color); outline-offset:-5px; } .service-card h3 a:hover { text-decoration:underline; } .service-arrow { align-self:end; font-size:1.6rem; } 
-@media(max-width:39.99rem) { .service-grid { grid-template-columns:1fr; } .service-card { min-height:0; } }
-</style>
+<div class="service-grid">{items.map(service=>{const cover=projects.find(p=>p.data.services.includes(service.slug))?.data.cover; const photo=cover ?? serviceIllustrations(service.slug)[0].photo;return <article class="service-card"><figure><ResponsiveImage photo={photo} kind="service"/>{!cover&&<figcaption>AI-generated illustration</figcaption>}</figure><h3><a href={`/services/${service.slug}`}>{service.title}</a></h3><p>{service.description}</p></article>})}</div>
+<style>.service-grid{display:grid;gap:clamp(1.5rem,3vw,2.5rem)}.service-card{display:grid;align-content:start;gap:.75rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border-decorative)}figure{margin:0}figcaption{font-size:.8125rem;margin-top:.4rem}h3 a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline} @media(min-width:40rem){.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>

@@ -4,7 +4,7 @@ interface Props { projects: Project[]; }
 const { projects } = Astro.props;
 const entries = projects.filter(p=>p.data.testimonial?.permission).slice(0,3);
 ---
-{entries.length > 0 && <section class="section container ruled stack-large"><h2>From our clients.</h2><div class="quotes">{entries.map(p=><figure class="stack"><blockquote class="editorial">“{p.data.testimonial?.quote}”</blockquote><figcaption>{p.data.testimonial?.attribution} · <a href={`/gallery/${p.id}`}>{p.data.title}</a></figcaption></figure>)}</div></section>}
+{entries.length > 0 && <section class="section container ruled stack-large"><h2>Client testimonials</h2><div class="quotes">{entries.map(p=><figure class="stack"><blockquote class="editorial">“{p.data.testimonial?.quote}”</blockquote><figcaption>{p.data.testimonial?.attribution} · <a href={`/gallery/${p.id}`}>{p.data.title}</a></figcaption></figure>)}</div></section>}
 <style>
 .quotes { display:grid; gap:2rem; } figure { border-top:2px solid var(--color-brand-blush); padding-top:1rem; margin:0; } blockquote { font-size:clamp(1.5rem,3vw,2rem); margin:0; } @media(min-width:64rem){ .quotes { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 </style>
