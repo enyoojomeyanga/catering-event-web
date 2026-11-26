@@ -18,7 +18,7 @@ export const canIndex = indexingEnabled && Boolean(siteOrigin && business.displa
 export function canonicalUrl(path: string): string | undefined {
   return siteOrigin ? new URL(path === '/' ? '/' : `${path.replace(/\/$/, '')}/`, siteOrigin).href : undefined;
 }
-export const corePaths = ['/', '/services', '/services/catering', '/services/decoration', '/services/baking', '/services/confectionery', '/about', '/faq', '/contact'] as const;
+export const corePaths = ['/', '/services', '/about', '/faq', '/contact'] as const;
 export function businessSchema() {
   if (!canIndex) return undefined;
   return {

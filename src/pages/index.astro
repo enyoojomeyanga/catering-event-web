@@ -1,25 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HomeHero from '../components/home/HomeHero.astro';
-import BookingSteps from '../components/home/BookingSteps.astro';
 import ServiceGrid from '../components/services/ServiceGrid.astro';
-import SectionHeading from '../components/shared/SectionHeading.astro';
 import FaqAccordion from '../components/shared/FaqAccordion.astro';
 import BookingCTA from '../components/shared/BookingCTA.astro';
 import Button from '../components/ui/Button.astro';
+import ResponsiveImage from '../components/media/ResponsiveImage.astro';
+import CategoryCards from '../components/portfolio/CategoryCards.astro';
+import { illustrations } from '../data/illustrations';
 import { faqs } from '../data/faqs';
 import { publishedProjects } from '../lib/portfolio';
-import ProjectSection from '../components/portfolio/ProjectSection.astro';
 import TestimonialSection from '../components/portfolio/TestimonialSection.astro';
 const projects=await publishedProjects();
+const aboutPhoto=illustrations[9].photo;
 ---
 <BaseLayout title="Catering & Events" description="Catering, event decoration, custom cakes and small chops for your occasion.">
-<HomeHero />
-<section class="section container stack-large"><SectionHeading title="Our services" description="Choose one service or arrange several for the same event."/><ServiceGrid/></section>
-<ProjectSection projects={projects.filter(p=>p.data.featured)}/>
-<section class="section container ruled split"><h2>About us</h2><div class="stack"><p>We help customers plan the food, decoration and treats for their events. You can also order cakes or small chops separately.</p><div><Button href="/about" variant="text">About the business</Button></div></div></section>
+<HomeHero/>
+<section class="section soft-section"><div class="container split about-intro" data-reveal><div class="stack"><p class="script-accent">A little about us</p><h2>Food and celebrations, brought together</h2><p>We provide catering, indoor and outdoor decoration, custom cakes and confectionery. You can book services together or order cakes and small chops separately.</p><div><Button href="/about" variant="text">About us</Button></div></div><figure class="media-frame"><ResponsiveImage photo={aboutPhoto} kind="service"/></figure></div></section>
+<section class="section container stack-large"><div class="center-heading" data-reveal><h2>Our services</h2><p>Choose the services you need for your occasion.</p></div><ServiceGrid/><div class="center-heading"><Button href="/services" variant="text">View all services</Button></div></section>
+<section class="section soft-section"><div class="container stack-large"><div class="center-heading" data-reveal><p class="script-accent">Explore the possibilities</p><h2>Our portfolio</h2><p>Browse {projects.length?'completed projects and illustrative examples':'illustrative ideas'} for your occasion.</p></div><CategoryCards compact/><div class="center-heading"><Button href="/gallery" variant="text">View portfolio</Button></div></div></section>
 <TestimonialSection projects={projects}/>
-<section class="section container stack-large"><h2>How to book</h2><BookingSteps/></section>
-<section class="section container ruled stack-large"><h2>FAQs</h2><FaqAccordion items={faqs.slice(0,3)}/><div><Button href="/faq" variant="text">View all FAQs</Button></div></section>
+<section class="section container stack-large"><div class="center-heading"><h2>FAQs</h2></div><FaqAccordion items={faqs.slice(0,3)}/><div class="center-heading"><Button href="/faq" variant="text">View all FAQs</Button></div></section>
 <BookingCTA/>
 </BaseLayout>
+<style>.about-intro{align-items:center}.about-intro figure{min-width:0}</style>

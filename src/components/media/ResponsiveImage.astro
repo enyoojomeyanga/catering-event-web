@@ -6,10 +6,10 @@ const { photo, kind = 'gallery', eager = false } = Astro.props;
 const candidates = kind === 'hero' ? [480,768,1280,1920,2560] : kind === 'service' ? [320,480,768,1024] : [320,480,640,960];
 const width = Math.min(photo.src.width, candidates.at(-1)!);
 const widths = [...new Set([...candidates.filter(n => n < width), width])];
-const sizes = kind === 'hero' ? '(min-width: 90rem) 1312px, 92vw' : '(min-width: 90rem) 640px, (min-width: 48rem) 44vw, 92vw';
+const sizes = kind === 'hero' ? '(min-width: 81rem) 1200px, 92vw' : '(min-width: 81rem) 600px, (min-width: 48rem) 44vw, 92vw';
 ---
 <Image src={photo.src} alt={photo.alt} width={width} widths={widths} sizes={sizes} format="webp" quality={80} loading={eager?'eager':'lazy'} fetchpriority={eager?'high':'auto'} decoding="async" class:list={['media-image',kind,kind !== 'hero' && photo.aspect]} />
 <style>
-.media-image { display:block; width:100%; height:auto; background:var(--surface-muted); object-fit:cover; }
-.hero { aspect-ratio:16/9; } .service,.gallery { aspect-ratio:4/3; } .portrait { aspect-ratio:3/4; } .square { aspect-ratio:1; }
+.media-image { display:block; width:100%; height:auto; background:var(--surface-muted); object-fit:cover; border-radius:var(--image-radius); }
+.hero { aspect-ratio:16/10; } .service,.gallery { aspect-ratio:4/3; } .portrait { aspect-ratio:3/4; } .square { aspect-ratio:1; }
 </style>

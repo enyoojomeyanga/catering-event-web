@@ -1,13 +1,33 @@
 ---
+import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import { whatsappLink } from '../../lib/whatsapp';
-import { publishedProjects } from '../../lib/portfolio';
-import ResponsiveImage from '../media/ResponsiveImage.astro';
 import { heroIllustration } from '../../data/illustrations';
-const cover = (await publishedProjects()).find(p=>p.data.featured)?.data.cover;
+const {src}=heroIllustration;
+const widths=[480,768,1024,1280,src.width].filter((w,i,a)=>w<=src.width&&a.indexOf(w)===i);
 ---
-<section class="section home-hero container">
- <div class="hero-copy"><h1>Making your occasions <span class="editorial">special.</span></h1><p class="lead">Planning an event or ordering something for a celebration? We can help with catering, decoration, cakes and small chops.</p><div class="action-row"><Button href={whatsappLink()}>Book on WhatsApp</Button><Button href="/services" variant="text">Explore services</Button></div></div>
- <figure class:list={[!cover && "illustrative"]}><ResponsiveImage photo={cover ?? heroIllustration} kind="hero" eager/>{!cover && <figcaption>AI-generated illustration, not a photograph of our work.</figcaption>}</figure>
+<section class="home-hero" aria-labelledby="hero-title">
+  <Image src={src} alt="" width={src.width} widths={widths} sizes="100vw" format="webp" quality={82} loading="eager" fetchpriority="high" decoding="async" class="hero-image" />
+  <div class="container hero-content">
+    <div class="hero-copy">
+      <h1 id="hero-title">Making your occasions <em>special.</em></h1>
+      <p>Planning an event or ordering something for a celebration? We can help with catering, decoration, cakes and small chops.</p>
+      <div class="action-row"><Button href={whatsappLink()}>Book on WhatsApp</Button><Button href="/services" variant="secondary">Explore services</Button></div>
+    </div>
+  </div>
 </section>
-<style>.home-hero{display:grid;gap:clamp(1.75rem,4vw,3rem)}.hero-copy{display:grid;gap:1.25rem;max-width:70ch}.hero-copy h1{font-size:var(--type-display);max-width:24ch}.hero-copy .action-row{margin-top:.5rem}figure{margin:0}.illustrative{width:100%;max-width:48rem}figcaption{font-size:.875rem;margin-top:.5rem}</style>
+<style>
+.home-hero{position:relative;isolation:isolate;display:grid;align-items:center;min-height:calc(100vh - 5rem - 1px);min-height:calc(100svh - 5rem - 1px);background:var(--plum);color:white;--focus-color:#fff}
+.hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:65% center;z-index:-2}
+.home-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgb(18 14 28 / .88) 0%,rgb(18 14 28 / .72) 48%,rgb(18 14 28 / .20) 100%);pointer-events:none}
+.hero-content{padding-block:clamp(3rem,9vh,7rem)}
+.hero-copy{display:grid;gap:1.5rem;max-width:40rem}
+.hero-copy h1{color:white;font-size:var(--type-display);max-width:17ch;line-height:1.15}
+.hero-copy em{color:#E8DAFA;font-weight:500}
+.hero-copy p{color:white;max-width:48ch;font-size:clamp(1rem,1.4vw,1.125rem)}
+.hero-copy :global(.secondary){color:white;border-color:white;background:rgb(18 14 28 / .35)}
+.hero-copy :global(.secondary:hover){background:white;color:var(--plum)}
+.hero-copy :global(.action:focus-visible){outline-color:white}
+@media(max-width:47.99rem){.home-hero::before{background:rgb(18 14 28 / .76)}.hero-image{object-position:66% center}}
+@media(prefers-reduced-motion:no-preference){.hero-copy{animation:hero-enter 600ms ease-out both}@keyframes hero-enter{from{transform:translateY(12px)}to{transform:none}}}
+</style>

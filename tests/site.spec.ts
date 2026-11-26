@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-const paths = ['/', '/services', '/services/catering', '/services/decoration', '/services/baking', '/services/confectionery', '/about', '/faq', '/contact', '/gallery'];
+const paths = ['/', '/services', '/about', '/faq', '/contact', '/gallery', '/gallery/category/catering', '/gallery/category/decoration', '/gallery/category/baking', '/gallery/category/confectionery'];
 for (const path of paths) {
   test(`core page ${path}`, async ({ page }, info) => {
     const errors: string[] = [];
@@ -28,16 +28,14 @@ for (const width of [320, 375, 768, 1024, 1280, 1920, 2560]) {
     }
   });
 }
-test('desktop disclosure and keyboard dismissal', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test('desktop direct links and keyboard navigation',async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
   await page.goto('/');
-  const menu = page.locator('.services-menu');
-  const summary = menu.locator('summary');
-  await summary.focus(); await page.keyboard.press('Enter');
-  await expect(menu).toHaveAttribute('open', '');
-  await page.keyboard.press('Escape');
-  await expect(menu).not.toHaveAttribute('open', '');
-  await expect(summary).toBeFocused();
+  const nav=page.locator('.desktop-nav');
+  await expect(nav.locator('details')).toHaveCount(0);
+  const link=nav.getByRole('link',{name:'Services',exact:true});
+  await link.focus(); await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/services\/?$/);
 });
 test('mobile navigation and FAQ', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
@@ -46,9 +44,9 @@ test('mobile navigation and FAQ', async ({ page }) => {
   await menu.locator(':scope > summary').click();
   await expect(menu).toHaveAttribute('open', '');
   await expect(menu.locator('nav details')).toHaveCount(0);
-  await expect(menu.getByRole('link', { name: 'Catering', exact: true })).toBeVisible();
-  await menu.getByRole('link', { name: 'Catering', exact: true }).click();
-  await expect(page).toHaveURL(/\/services\/catering\/?$/);
+  await expect(menu.getByRole('link', { name: 'Services', exact: true })).toBeVisible();
+  await menu.getByRole('link', { name: 'Services', exact: true }).click();
+  await expect(page).toHaveURL(/\/services\/?$/);
   await page.goto('/faq');
   const faq = page.locator('.faq-list details').first();
   await faq.locator('summary').click();
@@ -71,10 +69,10 @@ test('WhatsApp destination', async ({ page }) => {
 });
 test('native mobile menu without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
-  try { const page = await context.newPage(); await page.goto('http://127.0.0.1:4322/'); await page.locator('.mobile-nav > summary').click(); await expect(page.locator('.mobile-nav')).toHaveAttribute('open', ''); await expect(page.locator('.mobile-nav nav details')).toHaveCount(0); await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Catering', exact: true })).toBeVisible(); } finally { await context.close(); }
+  try { const page = await context.newPage(); await page.goto('http://127.0.0.1:4322/'); await page.locator('.mobile-nav > summary').click(); await expect(page.locator('.mobile-nav')).toHaveAttribute('open', ''); await expect(page.locator('.mobile-nav nav details')).toHaveCount(0); await expect(page.locator('.mobile-nav').getByRole('link', { name: 'Services', exact: true })).toBeVisible(); } finally { await context.close(); }
 });
 test('illustrative or populated gallery lightbox', async ({ page }) => {
-  await page.goto('/gallery');
+  await page.goto('/gallery/category/catering');
   const photos = page.locator('[data-lightbox-photo]');
   expect(await photos.count()).toBeGreaterThan(0);
   const first = photos.first(); await first.click();

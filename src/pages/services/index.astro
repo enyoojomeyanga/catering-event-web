@@ -1,9 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ServiceGrid from '../../components/services/ServiceGrid.astro';
+import PageHero from '../../components/shared/PageHero.astro';
 import BookingCTA from '../../components/shared/BookingCTA.astro';
+import ResponsiveImage from '../../components/media/ResponsiveImage.astro';
+import {services} from '../../data/services';
+import {serviceIllustrations} from '../../data/illustrations';
+import {publishedProjects} from '../../lib/portfolio';
+const projects=await publishedProjects();
 ---
 <BaseLayout title="Services" description="Explore catering, event decoration, baking and small chops services, available individually or together.">
- <section class="section container stack-large"><div class="stack"><h1>Our services</h1><p class="lead">Choose the services you need for your occasion.</p></div><ServiceGrid /></section>
- <BookingCTA title="Need multiple services?" message="Hello, I would like to enquire about combining services for my occasion." />
+<PageHero accent="What we offer" title="Our Services" description="Choose the services you need for your occasion."/>
+<section class="section container service-rows">{services.map((service,i)=>{const cover=projects.find(p=>p.data.services.includes(service.slug))?.data.cover;return <article class:list={['service-row',{reverse:i%2===1}]} id={service.slug} data-reveal><figure class="media-frame"><ResponsiveImage photo={cover??serviceIllustrations(service.slug)[0].photo} kind="service"/></figure><div class="stack"><h2>{service.title}</h2><p>{service.introduction}</p><ul>{service.offerings.map(item=><li>{item}</li>)}</ul><p class="service-detail">{service.answer.replace(/^Yes\. /, '')}</p></div></article>})}</section><BookingCTA title="Need multiple services?" message="Hello, I would like to enquire about combining services for my occasion."/>
 </BaseLayout>
+<style>.service-rows{display:grid;gap:var(--major-space)}.service-row{display:grid;align-items:center;gap:2rem}.service-row ul{margin:0;padding-left:1.2rem;color:var(--muted)}.service-row li::marker{color:var(--accent-ink)}@media(min-width:48rem){.service-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(2rem,5vw,4rem)}.reverse figure{grid-column:2;grid-row:1}.reverse .stack{grid-column:1;grid-row:1}}</style>

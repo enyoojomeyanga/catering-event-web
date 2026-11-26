@@ -1,9 +1,8 @@
 ---
 import Button from '../ui/Button.astro';
-import Section from '../ui/Section.astro';
-import { whatsappLink } from '../../lib/whatsapp';
-interface Props { message?: string; title?: string; }
-const { message, title = 'Discuss your occasion' } = Astro.props;
+import {whatsappLink} from '../../lib/whatsapp';
+interface Props {message?:string;title?:string;}
+const {message,title='Let’s discuss your occasion'}=Astro.props;
 ---
-<Section inverse><div class="booking"><div class="stack"><h2>{title}</h2><p>Tell us what you need and we can discuss availability and pricing.</p></div><div><Button href={whatsappLink(message)} variant="inverse">Book on WhatsApp</Button></div></div></Section>
-<style>.booking { display:grid; gap:1.5rem; align-items:center; } @media(min-width:48rem){ .booking { grid-template-columns:minmax(0,2fr) auto; } }</style>
+<section class="section booking-section"><div class="container center-heading" data-reveal><h2>{title}</h2><p>Share your plans with us to discuss availability and a quote.</p><Button href={whatsappLink(message)}>Book on WhatsApp</Button></div></section>
+<style>.booking-section{position:relative;background:var(--white);padding-block:var(--major-space);overflow:hidden}.booking-section::before,.booking-section::after{content:'✧';position:absolute;color:var(--lavender);font-size:2rem;pointer-events:none}.booking-section::before{left:6%;top:12%}.booking-section::after{right:6%;bottom:12%;color:var(--green-soft)}</style>

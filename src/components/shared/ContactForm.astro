@@ -1,0 +1,65 @@
+---
+import { services } from '../../data/services';
+const configured = (import.meta.env.PUBLIC_FORMSPREE_ENDPOINT ?? '').trim();
+// Form IDs are public identifiers. Never put a private API key in PUBLIC_ variables.
+const endpoint = /^https:\/\/formspree\.io\/f\/[A-Za-z0-9_-]+$/.test(configured) ? configured : undefined;
+if(configured && !endpoint) throw new Error('PUBLIC_FORMSPREE_ENDPOINT must be the HTTPS form URL provided by Formspree (https://formspree.io/f/FORM_ID).');
+---
+<div class="enquiry-form stack">
+  <h2>Send us a message</h2>
+  <p>Tell us about your occasion or order. We will use your contact details to respond to your enquiry.</p>
+  {!endpoint && <p id="form-unavailable" class="form-notice">The email form is not available yet. Please contact us by WhatsApp or email using the details on this page.</p>}
+  <form data-contact-form method="POST" action={endpoint} data-configured={Boolean(endpoint) ? 'true' : 'false'} aria-describedby={endpoint ? 'enquiry-privacy' : 'form-unavailable enquiry-privacy'}>
+    <fieldset disabled={!endpoint}>
+      <legend class="visually-hidden">Enquiry details</legend>
+      <div class="form-field"><label for="enquiry-name">Full name <span aria-hidden="true">*</span></label><input id="enquiry-name" name="name" autocomplete="name" required maxlength="100" placeholder="Your full name"/></div>
+      <div class="form-pair">
+        <div class="form-field"><label for="enquiry-email">Email address <span aria-hidden="true">*</span></label><input id="enquiry-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"/></div>
+        <div class="form-field"><label for="enquiry-phone">Phone number</label><input id="enquiry-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="Your phone number"/></div>
+      </div>
+      <div class="form-pair">
+        <div class="form-field"><label for="enquiry-service">Service required <span aria-hidden="true">*</span></label><select id="enquiry-service" name="service" required><option value="">Select a service</option>{services.map(service=><option value={service.title}>{service.title}</option>)}<option value="Multiple services">Multiple services</option><option value="Other enquiry">Other enquiry</option></select></div>
+        <div class="form-field"><label for="enquiry-date">Event date (optional)</label><input id="enquiry-date" name="event_date" type="date"/></div>
+      </div>
+      <div class="form-field"><label for="enquiry-message">Message <span aria-hidden="true">*</span></label><textarea id="enquiry-message" name="message" rows="5" required maxlength="3000" placeholder="Tell us what you have planned and how we can help."></textarea></div>
+      <input type="hidden" name="subject" value="New Flourish website enquiry"/>
+      <div hidden><label>Leave this blank<input name="_gotcha" type="text" tabindex="-1" autocomplete="off"/></label></div>
+      <p class="required-note">* Required fields</p>
+      <p id="enquiry-privacy" class="privacy-note">Your information is sent through <a href="https://formspree.io/legal/privacy-policy/">Formspree</a> to respond to your enquiry. Do not include sensitive information. Submitting this form does not confirm a booking.</p>
+      <button type="submit" data-send>Send message</button>
+    </fieldset>
+    <p data-form-status class="form-status" role="status" aria-live="polite" aria-atomic="true"></p>
+  </form>
+</div>
+<script>
+  const form=document.querySelector<HTMLFormElement>('[data-contact-form]');
+  if(form){
+    const button=form.querySelector<HTMLButtonElement>('[data-send]')!;
+    const status=form.querySelector<HTMLElement>('[data-form-status]')!;
+    let sending=false;
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();
+      if(sending || form.dataset.configured!=='true' || !form.reportValidity()) return;
+      // Read the submitted data before disabling controls.
+      const data=new FormData(form);
+      sending=true; button.disabled=true; button.textContent='Sending…';
+      status.dataset.state='pending'; status.textContent='Sending your enquiry…';
+      try{
+        const response=await fetch(form.action,{method:'POST',body:data,headers:{Accept:'application/json'},signal:AbortSignal.timeout(25000)});
+        if(!response.ok){
+          status.dataset.state='error';
+          status.textContent=response.status===429?'Too many requests. Please wait and try again, or chat on WhatsApp.':'Your enquiry could not be sent. Please check your details and try again, or contact us on WhatsApp.';
+          return;
+        }
+        const result:unknown=await response.json();
+        if(!result || typeof result!=='object' || !('ok' in result) || result.ok!==true) throw new Error('Unconfirmed submission');
+        form.reset(); status.dataset.state='success'; status.textContent='Thank you. Your enquiry has been submitted. We will be in touch using the details you provided.';
+      }catch{
+        status.dataset.state='error'; status.textContent='We could not confirm your submission. Please check your connection or contact us on WhatsApp before trying again.';
+      }finally{sending=false;button.disabled=false;button.textContent='Send message';}
+    });
+  }
+</script>
+<style>
+.enquiry-form{min-width:0}fieldset{display:grid;gap:1rem;border:0;margin:0;padding:0;min-inline-size:0}.form-field{display:grid;gap:.4rem;min-width:0}.form-pair{display:grid;gap:1rem}.form-field label{font-size:.875rem;font-weight:500;color:var(--plum)}.form-field label span{color:#9d274c}.form-field :is(input,select,textarea){width:100%;min-width:0;min-height:44px;padding:.65rem .85rem;border:1px solid #9c90ae;border-radius:.65rem;background:white;color:var(--plum);font:inherit;font-size:1rem}.form-field textarea{resize:vertical;min-height:9rem}.form-field input::placeholder,.form-field textarea::placeholder{color:var(--muted);opacity:1}.required-note,.privacy-note{font-size:.8125rem}.form-notice{padding:1rem;background:var(--lavender-soft);border-radius:var(--radius);color:var(--plum)}button{min-height:48px;border:1px solid var(--lavender);background:var(--lavender);color:var(--plum);border-radius:.65rem;font-weight:600;padding:.75rem 1rem}button:not(:disabled):hover{background:var(--border);border-color:var(--accent-ink)}button:disabled{cursor:not-allowed;background:var(--lavender-soft);color:var(--muted);border-color:var(--border)}fieldset:disabled :is(input,select,textarea){background:#FAF7FB;color:var(--muted)}.form-status:not(:empty){margin-top:1rem;padding:.85rem 1rem;border-radius:.5rem;background:var(--lavender-soft);color:var(--plum)}.form-status[data-state=error]{background:#fff1f4;color:#802344}.form-status[data-state=success]{background:#eef6ed;color:#24512b}.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}@media(min-width:36rem){.form-pair{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>

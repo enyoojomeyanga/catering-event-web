@@ -1,6 +1,6 @@
-# Flourish Catering and Events Services — v0.6.1
+# Flourish Catering and Events Services — v1.1.0
 
-Navigation refinement release, cumulative from v0.6.0. Desktop Services is a 280px text-only dropdown; the mobile menu exposes all service links without nested disclosures. Astro, TypeScript and custom CSS; approved brand colours and Manrope/Newsreader retained. No new npm dependencies. The sticky-header layout reserve and hysteresis thresholds (112px/56px) are unchanged; obsolete nested disclosure handling was removed.
+Veez-inspired redesign with a full-viewport photographic hero, consolidated service directory, expanded About page and email enquiries. Existing visual identity, navigation stability, WhatsApp booking, project collection and SEO safeguards remain intact.
 
 ## Local installation and testing
 
@@ -19,9 +19,9 @@ If the Chromium test browser is missing, run `npm run test:install`. For Linux b
 
 ## Temporary content
 
-All twelve illustrative WebP photographs are AI-generated, not real client work. They are separately stored in `src/assets/images/illustrations/` and registered in `src/data/illustrations.ts`. No fictional projects, ratings or testimonials are included. The homepage uses a temporary gallery image as its hero; its resolution is intentionally limited and it should be replaced with a high-resolution approved photograph. All illustrative imagery is labelled in the public UI. When genuine projects are published, the gallery and matching service proof sections use the actual records instead; service cards and the featured homepage hero also prefer eligible project covers. Services without approved photos retain labelled illustrations. The illustration-only gallery remains noindex and excluded from the production sitemap.
+The 13 generated WebP photographs are illustrative, not real client work. They live in `src/assets/images/illustrations/` and are registered in `src/data/illustrations.ts`. A contextual notice appears on portfolio pages using illustrations; individual image badges and captions have been removed. No fictional projects or testimonials are included. The homepage uses the dedicated `reception-hero.webp`. Replace the file and update its description in `src/data/illustrations.ts` when an authorized real photo is available. Other service imagery prefers eligible project covers when available. Illustration-only galleries remain noindex and excluded from the production sitemap.
 
-Edit service copy in `src/data/services.ts`, business/contact details in `src/data/business.ts`, and booking questions in `src/data/faqs.ts`. The copy is provisional, based on the confirmed general offerings; verify against client information before launch. To replace illustrative images directly, update the imported file and associated alt text/caption in `src/data/illustrations.ts`. For genuine proof, use a project record instead of merely swapping pixels, to ensure attribution and permissions are handled accurately.
+Edit service copy in `src/data/services.ts`, contact details in `src/data/business.ts` and FAQs in `src/data/faqs.ts`. Verify provisional offerings before publication. Use project records for genuine proofs of work.
 
 ## Add genuine projects
 
@@ -29,10 +29,15 @@ Put approved photographs in `src/assets/images/projects/<project-slug>/` and cre
 
 ## Acceptance
 
-Review the homepage, every service, gallery, about, FAQ, contact and error page on mobile and desktop. Confirm proof precedes offers, generated images are labelled, footer copyright is centred, no old motto or decorative arrows remain, gallery filtering and lightbox work, and navbar does not vibrate. Run the whole suite including `tests/editorial.spec.ts`. Repeat Lighthouse and manual keyboard/touch testing. See `docs/launch-checklist.md` for production requirements.
+Run `PUBLIC_ENABLE_INDEXING=false npm run qa` (the preview-only SEO checks expect noindex). Check all pages, four legacy service redirects, hero cropping, form configuration, portfolio category links, image viewer, mobile navigation, keyboard focus and scroll stability. Repeat Lighthouse and manual testing on a physical mobile device. For email activation follow `docs/contact-form-setup.md`. Existing local `.env` and deployment settings should be preserved. Review and merge any existing `vercel.json` before overwriting. No GitHub push or deployment is made by this archive.
 
-Packaging checks are not a substitute for the Astro build or browser QA. The packaging runtime lacks installed Astro dependencies; full validation is pending on the local machine.
+Packaging checks are not a substitute for the full Astro build or browser QA. The packaging environment lacks installed Astro dependencies; full validation remains pending. The original reference CSS and exact motion timings remain unverified. Genuine photographs, logo, staff profiles and social links are still pending.
 
-## Navigation release checks
+## v1.1.0 — Website refinement
 
-Run `npm run validate` before `npm run test:navigation`, then `npm run qa`. Test desktop click/keyboard navigation, active service links, outside dismissal, flat mobile touch navigation and small-height scrolling. Existing deployment configuration and indexing safeguards are unchanged. Back up local changes and test before pushing to GitHub; this archive does not deploy anything.
+- Full-viewport homepage hero with responsive WebP photography and readable overlay. Replace `src/assets/images/illustrations/reception-hero.webp` with an authorized real photo when available.
+- All four service descriptions now live at `/services`, with section IDs `catering`, `decoration`, `baking` and `confectionery`. Old service routes are redirects (Astro static fallback and Vercel permanent redirects); check after deploying. Homepage links target the sections; sitemap excludes old routes.
+- About page includes who we are, booking approach and practical planning information. No invented history or team biographies.
+- Repeated AI image captions removed; portfolio pages retain a single contextual notice where illustrative imagery is shown. Genuine photo captions are unchanged.
+- Contact page includes an email enquiry form and WhatsApp. See `docs/contact-form-setup.md` for provider and Vercel configuration. The form is disabled until the endpoint is supplied. All existing contact and brand data are preserved.
+- Existing dependency versions and stable navbar are unchanged. Run `PUBLIC_ENABLE_INDEXING=false npm run qa` before pushing, and test old URLs and actual email delivery on a preview deployment. Merge any existing local `vercel.json` rules with the included redirect rules instead of overwriting unrelated deployment settings.

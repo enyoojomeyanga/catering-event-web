@@ -3,7 +3,7 @@
 .grid { display: grid; grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr)); gap: var(--grid-gap); }
 .inverse { background: var(--surface-inverse); color: var(--text-inverse); --focus-color: var(--focus-dark); }
 .editorial { font-family: var(--font-editorial); font-style: italic; font-weight: 400; }
-.eyebrow { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.eyebrow { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: none; }
 .skip-link { position: fixed; inset: 0 auto auto 1rem; padding: .75rem; background: var(--surface-page); color: var(--text-primary); transform: translateY(-150%); z-index: 100; }
 .skip-link:focus { transform: none; }
 .stack { display:grid; gap:1rem; align-content:start; }
@@ -14,10 +14,16 @@
 .action-row { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; }
 .lead { font-size:clamp(1.125rem,1rem + .35vw,1.25rem); }
 .display-note { font-size:clamp(2rem,4vw,3.5rem); line-height:1.15; }
-.accent-rule { display:block; width:3.25rem; height:3px; background:var(--color-brand-blush); }
+.accent-rule { display:block; width:3.25rem; height:3px; background:var(--lavender); }
 .ruled { border-top:1px solid var(--border-decorative); }
 .editorial-panel { border-top:1px solid var(--border-interactive); padding-block:1.5rem; }
 .offerings { padding:0; margin:0; list-style:none; }
 .offerings li { padding-block:.85rem; border-bottom:1px solid var(--border-decorative); }
 
 @media(min-width:64rem){.stack,.section-heading{gap:1.25rem}}
+
+.script-accent{font-family:var(--font-script);font-size:clamp(1.75rem,3.2vw,2.5rem);line-height:1.1;color:var(--accent-ink);font-weight:400}
+.center-heading{max-width:65ch;margin-inline:auto;text-align:center;display:grid;gap:1rem;justify-items:center}
+.soft-section{background:var(--lavender-soft)}
+.media-frame{padding:.45rem;border-radius:calc(var(--image-radius) + .35rem);background:linear-gradient(135deg,var(--border),var(--green-soft));min-width:0}
+.photo-note{font-size:.8125rem;color:var(--muted);margin-top:.5rem}

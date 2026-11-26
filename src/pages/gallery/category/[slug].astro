@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/shared/PageHero.astro';
+import BookingCTA from '../../../components/shared/BookingCTA.astro';
+import Button from '../../../components/ui/Button.astro';
+import ProjectGrid from '../../../components/portfolio/ProjectGrid.astro';
+import GalleryGrid from '../../../components/media/GalleryGrid.astro';
+import {publishedProjects,projectPhotos} from '../../../lib/portfolio';
+import {services,type Service} from '../../../data/services';
+import {serviceIllustrations} from '../../../data/illustrations';
+export function getStaticPaths(){return services.map(service=>({params:{slug:service.slug},props:{service}}));}
+interface Props{service:Service;}
+const {service}=Astro.props;
+const projects=(await publishedProjects()).filter(p=>p.data.services.includes(service.slug));
+const photos=projects.length?projects.flatMap(p=>projectPhotos(p).map(photo=>({photo,categories:p.data.services}))):serviceIllustrations(service.slug);
+---
+<BaseLayout indexable={projects.length>0} title={`${service.title} portfolio`} description={`Browse ${service.title.toLowerCase()} imagery and completed projects when available.`}>
+<PageHero title={`${service.title} portfolio`}/>
+<section class="section container stack-large" data-gallery><div><Button href="/gallery" variant="text">Back to portfolio</Button></div>{!projects.length&&<p>Illustrative imagery for inspiration, not photographs of completed client work.</p>}{projects.length>0&&<section class="stack"><h2>Completed projects</h2><ProjectGrid projects={projects}/></section>}<GalleryGrid items={photos}/></section><BookingCTA message={`Hello, I would like to enquire about ${service.title.toLowerCase()}.`}/>
+</BaseLayout>

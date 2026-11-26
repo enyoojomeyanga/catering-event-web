@@ -1,17 +1,15 @@
-html { color-scheme: light; }
-body { background: var(--surface-page); color: var(--text-primary); font: 400 var(--type-body)/1.65 var(--font-body); overflow-wrap: break-word; }
-h1, h2, h3 { font-weight: 600; line-height: 1.15; text-wrap: balance; }
-h1 { font-size: var(--type-h1); } h2 { font-size: var(--type-h2); } h3 { font-size: var(--type-h3); }
-p { max-inline-size: var(--reading-max); }
-a { color: inherit; text-underline-offset: .2em; }
-:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 4px; }
-::selection { background: var(--surface-accent); color: var(--text-on-muted); }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
-
-html { scroll-padding-top: 7rem; }
-body { min-height:100vh; display:flex; flex-direction:column; }
-main { flex:1; }
-
-main, main section { min-width:0; }
-
-@media(min-width:64rem){body{line-height:1.7}}
+html{color-scheme:light;scroll-padding-top:7rem}
+body{background:var(--surface-page);color:var(--text-primary);font:400 1rem/1.7 var(--font-body);overflow-wrap:break-word;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1;min-width:0}main section{min-width:0}
+h1,h2,h3{font-family:var(--font-editorial);font-weight:600;line-height:1.2;text-wrap:balance;color:var(--plum)}
+h1{font-size:var(--type-h1)}h2{font-size:var(--type-h2)}h3{font-size:var(--type-h3)}
+p{max-inline-size:var(--reading-max);color:var(--muted)}a{color:inherit;text-underline-offset:.2em}
+:focus-visible{outline:2px solid var(--focus-color);outline-offset:4px}::selection{background:var(--lavender);color:var(--plum)}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:no-preference){
+ .revealed{animation:gentle-reveal 600ms ease-out both}
+ @keyframes gentle-reveal{from{opacity:.98;transform:translateY(16px)}to{opacity:1;transform:none}}
+ @view-transition{navigation:auto}
+ ::view-transition-old(root),::view-transition-new(root){animation-duration:250ms}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

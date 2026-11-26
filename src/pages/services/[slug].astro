@@ -1,29 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import BookingCTA from '../../components/shared/BookingCTA.astro';
-import FaqAccordion from '../../components/shared/FaqAccordion.astro';
-import { services, type Service } from '../../data/services';
-import { publishedProjects, projectPhotos } from '../../lib/portfolio';
-import GalleryGrid from '../../components/media/GalleryGrid.astro';
-import ProjectGrid from '../../components/portfolio/ProjectGrid.astro';
-import TestimonialSection from '../../components/portfolio/TestimonialSection.astro';
-import { serviceIllustrations } from '../../data/illustrations';
-export function getStaticPaths(){return services.map(service=>({params:{slug:service.slug},props:{service}}));}
-interface Props { service: Service; }
-const { service }=Astro.props;
-const projects=(await publishedProjects()).filter(p=>p.data.services.includes(service.slug));
-const photos=projects.length?projects.flatMap(p=>projectPhotos(p).map(photo=>({photo,categories:p.data.services}))):serviceIllustrations(service.slug);
-const message=`Hello, I would like to enquire about ${service.title.toLowerCase()}.`;
-const actionTitles={catering:'Request a catering quote',decoration:'Discuss your event',baking:'Enquire about a cake',confectionery:'Discuss your order'};
+import { services } from '../../data/services';
+export function getStaticPaths(){return services.map(service=>({params:{slug:service.slug}}));}
+return Astro.redirect(`/services#${Astro.params.slug}`, 301);
 ---
-<BaseLayout title={service.title} description={service.introduction}>
-<section class:list={['section container service-page',service.slug]}>
- <div class="intro stack"><h1>{service.title}</h1><p class="lead">{service.introduction}</p></div>
- <div class="proof stack"><h2>{projects.length?'Our work':'Illustrative examples'}</h2>{!projects.length&&<p>These AI-generated images illustrate possible presentations. They are not photographs of completed client work.</p>}<GalleryGrid items={photos}/>{projects.length>0&&<ProjectGrid projects={projects}/>}</div>
- <div class="offer stack"><h2>What we offer</h2><ul class="offerings">{service.offerings.map(item=><li>{item}</li>)}</ul></div>
-</section>
-<TestimonialSection projects={projects}/>
-<section class="section container ruled stack"><h2>FAQs</h2><FaqAccordion items={[{question:service.question,answer:service.answer}]}/></section>
-<BookingCTA message={message} title={actionTitles[service.slug]}/>
-</BaseLayout>
-<style>.service-page{display:grid;gap:clamp(2rem,5vw,4rem)}.intro{max-width:65ch}.proof,.offer{min-width:0}.decoration .proof :global(.photo-grid){grid-template-columns:repeat(2,minmax(0,1fr))}.decoration .proof :global(figure:first-child){grid-column:1/-1}.baking .proof :global(.media-image){aspect-ratio:3/4}.confectionery .proof :global(.photo-grid){grid-template-columns:repeat(2,minmax(0,1fr))}@media(min-width:64rem){.catering{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}.catering .intro{grid-column:1/-1}.catering .proof :global(.photo-grid){grid-template-columns:repeat(2,minmax(0,1fr))}.baking .proof :global(.photo-grid){grid-template-columns:repeat(3,minmax(0,1fr))}.confectionery .proof :global(.photo-grid){grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:39.99rem){.decoration .proof :global(.photo-grid),.confectionery .proof :global(.photo-grid){grid-template-columns:1fr}}</style>

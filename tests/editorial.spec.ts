@@ -1,28 +1,33 @@
-import { test, expect } from '@playwright/test';
-for (const width of [320, 375, 1440]) {
- test(`refined layout at ${width}`, async ({page})=>{
+import {test,expect} from '@playwright/test';
+for(const width of [320,375,1440]){
+ test(`reference redesign at ${width}`,async({page})=>{
   await page.setViewportSize({width,height:900});
-  for (const path of ['/', '/services/catering','/services/decoration','/services/baking','/services/confectionery','/about','/contact','/faq','/gallery']) {
+  for(const path of ['/','/services','/about','/contact','/faq','/gallery']){
    await page.goto(path);
    await expect(page.locator('body')).not.toContainText('Integrity is our pride');
    await expect(page.locator('body')).not.toContainText('↗');
-   await expect(page.locator('footer .copyright')).toHaveCSS('text-align','center');
-   await expect(page.locator('footer a[href^="tel:"],footer a[href^="mailto:"]')).toHaveCount(0);
+   await expect(page.locator('footer .copyright')).toHaveCSS('text-align',width>=768?'left':'center');
+   await expect(page.locator('footer a[href^="tel:"]')).toHaveCount(2);
+   await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(1);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
-   if(path.startsWith('/services/')) await expect(page.locator('main [data-lightbox-photo]').first()).toBeVisible();
   }
  });
 }
-
-test('illustrative gallery is disclosed and filters images', async ({page})=>{
- await page.goto('/gallery');
- const gallery=page.locator('[data-gallery]');
- const projectCards=gallery.locator('.project-card');
- if(await projectCards.count()===0){
-  await expect(page.getByText('AI-generated illustrations for inspiration.',{exact:false})).toBeVisible();
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content',/noindex/);
-  await gallery.getByRole('button',{name:'Catering',exact:true}).click();
-  await expect(gallery.locator('figure[data-categories="catering"]:not([hidden])')).toHaveCount(3);
-  await expect(gallery.locator('figure[data-filter-item]:not([hidden])')).toHaveCount(3);
- }
+for(const slug of ['catering','decoration','baking','confectionery']){
+ test(`portfolio category ${slug}`,async({page})=>{
+  await page.goto('/gallery');
+  await page.locator(`main a[href="/gallery/category/${slug}"]`).click();
+  await expect(page).toHaveURL(new RegExp(`/gallery/category/${slug}/?$`));
+  await expect(page.locator('main [data-lightbox-photo]').first()).toBeVisible();
+  const projectCards=page.locator('main .project-card');
+  if(await projectCards.count()===0){
+   await expect(page.getByText('Illustrative imagery for inspiration, not photographs of completed client work.',{exact:false})).toBeVisible();
+   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content',/noindex/);
+  }
+ });
+}
+test('reduced motion keeps content visible',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'}); await page.goto('/');
+ await expect(page.locator('main h1')).toBeVisible();
+ expect(await page.locator('[data-reveal].revealed').count()).toBe(0);
 });

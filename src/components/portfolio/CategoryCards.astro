@@ -1,0 +1,11 @@
+---
+import {services} from '../../data/services';
+import {serviceIllustrations} from '../../data/illustrations';
+import {publishedProjects} from '../../lib/portfolio';
+import ResponsiveImage from '../media/ResponsiveImage.astro';
+const projects=await publishedProjects();
+interface Props{compact?:boolean;}
+const {compact=false}=Astro.props;
+---
+<div class:list={['category-grid',{compact}]}>{services.map(service=>{const cover=projects.find(p=>p.data.services.includes(service.slug))?.data.cover;return <article class="category" data-reveal><a href={`/gallery/category/${service.slug}`} class="category-link"><ResponsiveImage photo={cover??serviceIllustrations(service.slug)[0].photo} kind="service"/><div class="overlay"><h3>{service.title}</h3><span>View gallery</span></div></a></article>})}</div>
+<style>.category-grid{display:grid;gap:1.5rem}.category{min-width:0}.category-link{display:block;position:relative;isolation:isolate;overflow:hidden;border-radius:var(--image-radius);box-shadow:0 3px 8px #1f1b2e12;text-decoration:none}.category-link::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 12%,rgb(31 27 46 / .78) 55%,rgb(31 27 46 / .94) 100%);pointer-events:none}.category-link :global(img){transition:transform 400ms ease}.category-link:hover :global(img){transform:scale(1.035)}.overlay{position:absolute;inset:auto 0 0;z-index:1;padding:clamp(1rem,3vw,2rem);display:grid;gap:.65rem;color:white}.overlay h3{color:white;font-size:clamp(1.25rem,2vw,1.65rem)}.overlay span{font-size:.875rem;color:white}.category-link:focus-visible{outline-offset:4px}@media(min-width:40rem){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(min-width:64rem){.compact{grid-template-columns:repeat(4,minmax(0,1fr))}.compact .overlay{padding:1rem}.compact .overlay h3{font-size:1.25rem}}</style>

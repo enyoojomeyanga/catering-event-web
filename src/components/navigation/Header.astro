@@ -1,44 +1,18 @@
 ---
 import { business } from '../../data/business';
-import { services } from '../../data/navigation';
+import { navigation } from '../../data/navigation';
 import { whatsappLink } from '../../lib/whatsapp';
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const active = (href: string) => path === href ? 'page' : undefined;
-const servicesActive = path === '/services' || path.startsWith('/services/');
-const name = business.displayName ?? business.registeredName;
-
+const path=Astro.url.pathname.replace(/\/$/,'')||'/';
+const active=(href:string)=>path===href?'page':undefined;
+const sectionActive=(href:string)=>href!=='/'&&path.startsWith(href+'/');
+const name=business.displayName??business.registeredName;
 ---
-<header class="site-header" data-header>
-  <div class="header-surface">
-  <div class="container header-row">
-    <a class="brand" href="/" aria-label={`${name} home`}>{name}</a>
-    <nav aria-label="Primary" class="desktop-nav">
-      <a href="/" aria-current={active('/')}>Home</a>
-      <details class="services-menu" data-disclosure>
-        <summary class:list={[{ 'section-active': servicesActive }]}>Services <span class="chevron" aria-hidden="true"></span></summary>
-        <div class="service-panel">
-          {services.map(service => <a href={`/services/${service.slug}`} aria-current={active(`/services/${service.slug}`)}>{service.title}</a>)}
-          <a class="all-services" href="/services" aria-current={active('/services')}>All services</a>
-        </div>
-      </details>
-      <a href="/gallery" aria-current={active("/gallery")}>Gallery</a><a href="/about" aria-current={active('/about')}>About</a>
-      <a href="/contact" aria-current={active('/contact')}>Contact</a>
-    </nav>
-    <a class="enquire" href={whatsappLink()}>Enquire<span class="wide-label"> now</span></a>
-    <details class="mobile-nav" data-disclosure>
-      <summary>Menu <span aria-hidden="true">☰</span></summary>
-      <nav aria-label="Mobile primary" class="mobile-panel">
-        <a href="/" aria-current={active('/')}>Home</a>
-        <div class="mobile-service-group" role="group" aria-labelledby="mobile-services-label">
-          <p id="mobile-services-label" class:list={['mobile-services-label', { 'section-active': servicesActive }]}>Services</p>
-          <div class="mobile-services"><a href="/services" aria-current={active('/services')}>All services</a>{services.map(service => <a href={`/services/${service.slug}`} aria-current={active(`/services/${service.slug}`)}>{service.title}</a>)}</div>
-        </div>
-        <a href="/gallery" aria-current={active("/gallery")}>Gallery</a><a href="/about" aria-current={active('/about')}>About</a><a href="/contact" aria-current={active('/contact')}>Contact</a>
-      </nav>
-    </details>
-  </div>
-  </div>
-</header>
+<header class="site-header" data-header><div class="header-surface"><div class="container header-row">
+<a class="brand" href="/" aria-label={`${name} home`}>{name}</a>
+<nav class="desktop-nav" aria-label="Primary">{navigation.filter(item=>item.href!=='/').map(item=><a href={item.href} aria-current={active(item.href)} class:list={[{'section-active':sectionActive(item.href)}]}>{item.label}</a>)}</nav>
+<a class="enquire" aria-label="Book on WhatsApp" href={whatsappLink()}>Book<span class="wide-label"> on WhatsApp</span></a>
+<details class="mobile-nav" data-disclosure><summary aria-label="Menu"><span class="menu-label">Menu</span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav class="mobile-panel" aria-label="Mobile primary">{navigation.map(item=><a href={item.href} aria-current={active(item.href)} class:list={[{'section-active':sectionActive(item.href)}]}>{item.label}</a>)}</nav></details>
+</div></div></header>
 <script>
   const header = document.querySelector<HTMLElement>('[data-header]');
   if (header) {
@@ -71,7 +45,7 @@ const name = business.displayName ?? business.registeredName;
         ?? disclosures.find(item => item.open);
       if (open) { event.preventDefault(); close(open, true); }
     });
-    const breakpoint = matchMedia('(min-width: 75rem)');
+    const breakpoint = matchMedia('(min-width: 70rem)');
     breakpoint.addEventListener('change', () => disclosures.forEach(item => close(item)));
     // A fixed minimum outer footprint prevents scroll anchoring feedback.
     // Hysteresis prevents rapid state changes near the compact threshold.
@@ -85,43 +59,7 @@ const name = business.displayName ?? business.registeredName;
   }
 </script>
 <style>
-.site-header { --header-reserve:4.5rem; position:sticky; top:0; z-index:20; min-block-size:calc(var(--header-reserve) + 1px); flex-shrink:0; pointer-events:none; }
-.header-surface { background:var(--surface-page); border-bottom:1px solid var(--border-decorative); pointer-events:auto; }
-.header-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:.65rem; min-height:var(--header-reserve); padding-block:.5rem; position:relative; }
-.compact .header-row { min-height:3.75rem; }
-.brand { min-height:44px; display:flex; align-items:center; font-weight:600; font-size:clamp(.75rem,1.25vw,1rem); line-height:1.3; text-decoration:none; padding-block:.5rem; overflow-wrap:anywhere; }
-.enquire { background:var(--action-primary-bg); color:var(--action-primary-text); text-decoration:none; font-size:.85rem; font-weight:600; padding:.65rem .7rem; min-height:44px; display:flex; align-items:center; white-space:nowrap; }
-nav a, summary { min-height:44px; display:flex; align-items:center; padding:.5rem .65rem; text-decoration:none; font-weight:500; font-size:.95rem; }
-summary { cursor:pointer; list-style:none; gap:.35rem; } summary::-webkit-details-marker { display:none; }
-nav a:hover, summary:hover, [aria-current='page'], .section-active { text-decoration:underline; text-underline-offset:.3em; }
-.desktop-nav,.wide-label { display:none; }
- .mobile-panel,.service-panel { position:absolute; top:100%; background:var(--surface-page); border:1px solid var(--border-decorative); max-height:calc(100dvh - 6rem); overflow:auto; overscroll-behavior:contain; }
-.mobile-panel { inset-inline:var(--page-padding); padding:.5rem; }
-details:not([open]) > .mobile-panel, details:not([open]) > .service-panel { display:none; }
-.mobile-panel > a,.mobile-service-group { border-bottom:1px solid var(--border-decorative); }
-.mobile-panel > a:last-child { border-bottom:0; }
-.mobile-services-label { font-weight:600; padding:.75rem .65rem .25rem; font-size:.95rem; }
-.mobile-services { padding-inline-start:.75rem; padding-block-end:.5rem; }
-.mobile-services a { font-size:.9rem; }
-.service-panel a:hover,.mobile-panel a:hover { background:var(--surface-accent); color:var(--text-on-muted); }
-.service-panel a:focus-visible,.mobile-panel a:focus-visible { outline-offset:-3px; }
-.chevron { width:.42rem; height:.42rem; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(45deg); margin-inline-start:.15rem; margin-block-start:-.2rem; flex:none; }
-.services-menu[open] .chevron { transform:rotate(225deg); margin-block-start:.2rem; }
-@media(min-width:75rem) {
-  .site-header { --header-reserve:5rem; }
-  .header-row { grid-template-columns:minmax(12rem,1fr) auto auto; gap:1.5rem; }
-  .compact .header-row { min-height:4rem; }
-  .desktop-nav { display:flex; align-items:center; grid-column:2; grid-row:1; gap:.5rem; }
-  .enquire { grid-column:3; grid-row:1; padding-inline:1.25rem; }
-  .wide-label { display:inline; white-space:pre; }
-  .mobile-nav { display:none; }
-  .services-menu { position:relative; }
-  .service-panel { width:280px; inset-inline-start:0; padding:.5rem; }
-  .service-panel a { padding-inline:.75rem; }
-  .all-services { border-top:1px solid var(--border-decorative); margin-top:.25rem; font-weight:600; }
-}
-@media(prefers-reduced-motion:no-preference) {
-  .services-menu[open] .service-panel { animation:menu-appear 150ms ease-out; }
-  @keyframes menu-appear { from { opacity:0; } to { opacity:1; } }
-}
+.site-header{--header-reserve:5rem;position:sticky;top:0;z-index:20;block-size:calc(var(--header-reserve) + 1px);flex-shrink:0;pointer-events:none}.header-surface{background:var(--white);border-bottom:1px solid var(--border);pointer-events:auto}.header-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:.5rem;min-height:var(--header-reserve);padding-block:.5rem;position:relative}.compact .header-row{min-height:4.25rem}.brand{font-family:var(--font-editorial);font-weight:600;font-size:clamp(.875rem,1.5vw,1.2rem);line-height:1.25;min-height:44px;display:flex;align-items:center;text-decoration:none}.enquire{background:var(--lavender);color:var(--plum);border-radius:100vw;text-decoration:none;font-size:.875rem;font-weight:500;min-height:44px;display:flex;align-items:center;padding:.65rem .9rem;white-space:nowrap}.enquire:hover{background:var(--border)}nav a,summary{min-height:44px;display:flex;align-items:center;padding:.5rem .65rem;text-decoration:none;font-size:.875rem;font-weight:500;color:var(--muted)}summary{cursor:pointer;list-style:none;gap:.25rem;justify-content:center;min-width:44px;padding-inline:.3rem}summary::-webkit-details-marker{display:none}nav a:hover,[aria-current='page'],.section-active{color:var(--accent-ink);text-decoration:underline;text-underline-offset:.3em}.desktop-nav,.wide-label,.menu-label{display:none}.mobile-panel{position:absolute;top:100%;inset-inline:var(--page-padding);background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem;max-height:calc(100dvh - 6rem);overflow:auto;overscroll-behavior:contain;box-shadow:0 8px 24px #1f1b2e0d}.mobile-panel a{padding-inline:1rem;border-radius:.5rem}.mobile-panel a:hover{background:var(--lavender-soft)}.mobile-panel a:focus-visible{outline-offset:-3px}details:not([open])>.mobile-panel{display:none}
+@media(min-width:70rem){.site-header{--header-reserve:5rem}.header-row{grid-template-columns:minmax(0,1fr) auto auto;gap:1.25rem}.compact .header-row{min-height:4rem}.desktop-nav{display:flex;align-items:center;gap:.25rem}.enquire{padding-inline:1.25rem}.wide-label{display:inline;white-space:pre}.mobile-nav{display:none}}
+@media(prefers-reduced-motion:no-preference){.mobile-nav[open] .mobile-panel{animation:menu-appear 250ms ease-out}@keyframes menu-appear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}}
 </style>

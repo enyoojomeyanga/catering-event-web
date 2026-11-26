@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/services/catering",
+      "destination": "/services#catering",
+      "permanent": true
+    },
+    {
+      "source": "/services/decoration",
+      "destination": "/services#decoration",
+      "permanent": true
+    },
+    {
+      "source": "/services/baking",
+      "destination": "/services#baking",
+      "permanent": true
+    },
+    {
+      "source": "/services/confectionery",
+      "destination": "/services#confectionery",
+      "permanent": true
+    }
+  ]
+}
